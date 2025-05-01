@@ -14,6 +14,7 @@ CREATE TABLE organization(
     PRIMARY KEY(organization_id)
 );
 
+-- Create Member Table
 CREATE TABLE member(
     member_id INT(4) NOT NULL,
     first_name VARCHAR(25) NOT NULL,
@@ -28,6 +29,7 @@ CREATE TABLE member(
     PRIMARY KEY(member_id)
 );
 
+--Create Fee Table
 CREATE TABLE fee(
     fee_id INT(4) NOT NULL,
     fee_amount INT(5) NOT NULL,
@@ -41,5 +43,7 @@ CREATE TABLE fee(
     PRIMARY KEY(fee_id),
     CONSTRAINT fee_organization_id_fk FOREIGN KEY(organization_id) REFERENCES organization(organization_id),
     CONSTRAINT fee_member)id_fk FOREIGN KEY(member_id) REFERENCES member(member_id)
-)
+);
+
+
 
