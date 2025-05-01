@@ -14,4 +14,3 @@ CREATE TABLE organization{
     PRIMARY KEY(organization_num)
 }
 
-CREATE
