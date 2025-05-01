@@ -1,6 +1,9 @@
 -- Create Database
 create database studorg;
 
+--switch to database
+use studorg;
+
 --Create Organization Tabble
 CREATE TABLE organization(
     organization_id INT(3) NOT NULL,
@@ -38,12 +41,31 @@ CREATE TABLE fee(
     fee_semester VARCHAR(12),
     academic_year VARCHAR(9),
     organization_id INT(3),
-    member_id INT(3)
+    member_id INT(3),
 
     PRIMARY KEY(fee_id),
     CONSTRAINT fee_organization_id_fk FOREIGN KEY(organization_id) REFERENCES organization(organization_id),
-    CONSTRAINT fee_member)id_fk FOREIGN KEY(member_id) REFERENCES member(member_id)
+    CONSTRAINT fee_member_id_fk FOREIGN KEY(member_id) REFERENCES member(member_id)
 );
 
+--Create organization event table
+CREATE TABLE organization_event(
+    organization_id INT(3),
+    event_name VARCHAR(50),
 
+    CONSTRAINT organization_event_organization_id_fk FOREIGN KEY(organization_id) REFERENCES organization(organization_id)
+);
+
+--Create organization has member table
+CREATE TABLE organization_has_member(
+    organization_id INT(3),
+    member_id INT(3),
+    committee VARCHAR(30),
+    role VARCHAR(30),
+    academic_year VARCHAR(9),
+    semester VARCHAR(12),
+
+    CONSTRAINT organization_has_member_organization_id_fk FOREIGN KEY(organization_id) REFERENCES organization(organization_id),
+    CONSTRAINT organization_has_member_member_id_fk FOREIGN KEY(member_id) REFERENCES member(member_id)
+);
 
