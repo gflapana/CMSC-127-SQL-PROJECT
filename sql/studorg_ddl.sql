@@ -2,7 +2,7 @@
 create database studorg;
 
 --Create Organization Tabble
-CREATE TABLE organization{
+CREATE TABLE organization(
     organization_id INT(3),
     organization_name VARCHAR(50) NOT NULL,
     organization_type VARCHAR(20),
@@ -12,9 +12,9 @@ CREATE TABLE organization{
     organization_password VARCHAR(20) NOT NULL,
 
     PRIMARY KEY(organization_id)
-}
+);
 
-CREATE TABLE member{
+CREATE TABLE member(
     member_id INT(4),
     first_name VARCHAR(25) NOT NULL,
     middle_name VARCHAR(15),
@@ -26,5 +26,5 @@ CREATE TABLE member{
     member_password VARCHAR(20) NOT NULL,
 
     PRIMARY KEY(member_id)
-}
+);
 
