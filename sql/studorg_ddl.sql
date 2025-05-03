@@ -54,7 +54,8 @@ CREATE TABLE organization_event(
     organization_id INT(3) NOT NULL,
     event_name VARCHAR(50) NOT NULL,
 
-    PRIMARY KEY(organization_id, event_name)
+    PRIMARY KEY(organization_id, event_name),
+    CONSTRAINT organization_event_organization_id_fk FOREIGN KEY(organization_id) REFERENCES organization(organization_id)
 );
 
 --Create organization has member table
@@ -67,6 +68,8 @@ CREATE TABLE organization_has_member(
     academic_year VARCHAR(9) NOT NULL,
     semester VARCHAR(12) NOT NULL,
 
-    PRIMARY KEY(organization_id, member_id, academic_year, semester)
+    PRIMARY KEY(organization_id, member_id, academic_year, semester),
+    CONSTRAINT organization_has_member_organization_id_fk FOREIGN KEY(organization_id) REFERENCES organization(organization_id),
+    CONSTRAINT organization_has_member_member_id_fk FOREIGN KEY(member_id) REFERENCES member(member_id)
 );
 
