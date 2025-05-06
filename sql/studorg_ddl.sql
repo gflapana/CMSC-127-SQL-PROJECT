@@ -1,10 +1,10 @@
 -- Create Database
 create database studorg;
 
---switch to database
+-- switch to database
 use studorg;
 
---Create Organization Tabble
+-- Create Organization Tabble
 CREATE TABLE organization(
     organization_id INT(3) NOT NULL AUTO_INCREMENT,
     organization_name VARCHAR(50) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE member(
     PRIMARY KEY(member_id)
 );
 
---Create Fee Table
+-- Create Fee Table
 CREATE TABLE fee(
     fee_id INT(4) NOT NULL AUTO_INCREMENT,
     fee_amount INT(5) NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE fee(
     CONSTRAINT fee_member_id_fk FOREIGN KEY(member_id) REFERENCES member(member_id)
 );
 
---Create organization event table
+-- Create organization event table
 CREATE TABLE organization_event(
     organization_id INT(3) NOT NULL,
     event_name VARCHAR(50) NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE organization_event(
     CONSTRAINT organization_event_organization_id_fk FOREIGN KEY(organization_id) REFERENCES organization(organization_id)
 );
 
---Create organization has member table
+-- Create organization has member table
 CREATE TABLE organization_has_member(
     organization_id INT(3) NOT NULL,
     member_id INT(4) NOT NULL,

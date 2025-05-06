@@ -1,4 +1,4 @@
---switch to database
+-- switch to database
 use studorg;
 
 -- Insert into Organization Table
