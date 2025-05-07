@@ -36,6 +36,29 @@ UPDATE member SET member_username="emycute" WHERE member_id=1 AND member_passwor
 UPDATE member SET member_password="emysocute" WHERE member_id=6 AND member_password="emy1234";
 
 
+--UPDATE ORGANIZATION ATTRIBUTES
+
+-- update organization name
+UPDATE organization SET organization_name = "Young Software Engineer's Society" WHERE organization_id=1 AND organization_password="ysesexperience";
+
+-- update organization type
+UPDATE organization SET organization_type = "Akademika" WHERE organization_id=1 AND organization_password="ysesexperience";
+
+-- update date established
+UPDATE organization SET date_established = 2002, years_active = YEAR(CURDATE()-2002) WHERE organization_id=1 AND organization_password="ysesexperience";
+
+-- update organization username
+UPDATE organization SET organization_username = "yses2002" WHERE organization_id=1 AND organization_password="ysesexperience";
+
+-- update organization password
+UPDATE organization SET organization_password = "ysesexperts" WHERE organization_id=1 AND organization_password="ysesexperience";
+
+
+
+--UPDATE ORGANIZATION EVENT ATTRIBUTES
+
+UPDATE organization_event SET event_name = "YSES Coding Battle" WHERE organization_id = 1;
+
 
 
 
