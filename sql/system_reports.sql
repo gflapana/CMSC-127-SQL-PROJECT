@@ -150,7 +150,7 @@ WHERE o.organization_id = 1  -- change this to the desired organization
 
 
 -- 10 View the member/s with the highest debt of a given organization for a given semester.
-SELECT m.member_id, CONCAT(m.first_name, ' ', m.middle_name, ' ', m.last_name) AS full_name, f.fee_amount
+SELECT m.member_id, CONCAT(m.first_name, ' ', m.last_name) AS full_name, f.fee_amount
 FROM member AS m
 JOIN organization_has_member AS ohm
 ON m.member_id = ohm.member_id
