@@ -1,4 +1,4 @@
---switch to database
+-- switch to database
 use studorg;
 
 -- Insert into Organization Table
@@ -46,4 +46,6 @@ VALUES
 (1, 3, "Projects and Activities", "Member", "Active", "2024-2025", "2nd Semester"),
 (3, 3, "Education", "Member", "Active", "2024-2025", "2nd Semester"),
 (4, 5, NULL, NULL, "Inactive", "2024-2025", "2nd Semester"),
-(5, 4, "Logistics", "Logistics Head", "Active", "2024-2025", "2nd Semester");
+(5, 4, "Logistics", "Logistics Head", "Active", "2024-2025", "2nd Semester"),
+(1, 2, "Logistics", "Logistics Head", "Active", "2023-2024", "1st Semester"),
+(1, 4, "Logistics", "Logistics Head", "Inactive", "2024-2025", "2nd Semester");
