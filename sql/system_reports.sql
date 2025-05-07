@@ -150,13 +150,24 @@ WHERE o.organization_id = 1  -- change this to the desired organization
 
 
 -- 10 View the member/s with the highest debt of a given organization for a given semester.
-SELECT m.member_id, CONCAT(m.first_name, ' ', m.middle_name, ' ', m.last_name) AS full_name, f.fee_amount
-FROM member AS m
-JOIN organization_has_member AS ohm
-ON m.member_id = ohm.member_id
-JOIN fee AS f
-ON ohm.member_id = f.member_id
-WHERE f.date_paid IS NULL 
-  AND ohm.organization_id = 1 -- change this to the desired organization
-  AND f.fee_amount = (SELECT MAX(fee_amount) FROM fee WHERE date_paid IS NULL)
-  AND f.semester = "2nd Semester"; -- change this to the desired semester
+SELECT m.member_id, CONCAT(m.first_name, ' ', m.last_name) AS full_name, debts.total_debt
+FROM (
+    SELECT f.member_id, SUM(f.fee_amount) AS total_debt
+    FROM fee AS f
+    JOIN organization_has_member AS ohm ON f.member_id = ohm.member_id
+    WHERE f.date_paid IS NULL 
+      AND ohm.organization_id = 1 -- change this to the desired organization
+      AND f.semester = "2nd Semester" -- change this to the desired semester
+    GROUP BY f.member_id
+) AS debts
+JOIN member as m on debts.member_id = m.member_id
+WHERE total_debt = (SELECT MAX(total_debt) 
+                    FROM (
+                        SELECT SUM(f.fee_amount) AS total_debt
+                        FROM fee AS f
+                        JOIN organization_has_member AS ohm ON f.member_id = ohm.member_id
+                        WHERE f.date_paid IS NULL 
+                          AND ohm.organization_id = 1   -- change this to the desired organization
+                          AND f.semester = "2nd Semester"   -- change this to the desired semester
+                        GROUP BY f.member_id
+                    ) AS max_debts);
