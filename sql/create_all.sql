@@ -4,21 +4,21 @@ use studorg;
 -- Insert into Organization Table
 INSERT INTO organization(organization_name, organization_type, date_established, years_active, organization_username, organization_password)
 VALUES
-("Young Software Engineers' Society", "Academic", 2005, YEAR(CURDATE()) - 2005, "yses2005", "ysesexperience"),
-("UPLB Lisieux Music Ministry", "Religious", 1981, YEAR(CURDATE()) - 1981, "lmm1981", "lisyu"),
-("UP Oroquieta", "Varsitarian", 1996, YEAR(CURDATE()) - 1996, "upo1996", "upoquezon"),
-("Gaming Society of Gamers", "Varsitarian", 2000, YEAR(CURDATE()) - 2000, "gsg2000", "gamingsoc"),
-("Studying Alliance of Students", "Academic", 2000, YEAR(CURDATE()) - 2000, "sas200", "studyingall");
+("Young Software Engineers' Society", "Academic", 2005, YEAR(CURDATE()) - 2005, "yses2005", SHA2("ysesexperience",0)),
+("UPLB Lisieux Music Ministry", "Religious", 1981, YEAR(CURDATE()) - 1981, "lmm1981", SHA2("lisyu",0)),
+("UP Oroquieta", "Varsitarian", 1996, YEAR(CURDATE()) - 1996, "upo1996", SHA2("upoquezon",0)),
+("Gaming Society of Gamers", "Varsitarian", 2000, YEAR(CURDATE()) - 2000, "gsg2000", SHA2("gamingsoc",0)),
+("Studying Alliance of Students", "Academic", 2000, YEAR(CURDATE()) - 2000, "sas200", SHA2("studyingall",0));
 
 
 -- Insert into Member Table
 INSERT INTO member(first_name, middle_name, last_name, sex, degree_program, batch, member_username, member_password)
 VALUES
-("John", "Emy", "Bautista", "Male", "Bachelor of Science in Computer Science", 2023, "emy123", "emy1234"),
-("Geoffrey", "Gabriel", "Lapaña", "Male", "Bachelor of Science in Computer Science", 2023, "geof123", "geof1234"),
-("Lawrence", "Joel", "Macatangay", "Female", "Bachelor of Science in Computer Science", 2023, "joel123", "joel1234"),
-("Amy", NULL, "Santiago", "Female", "Bachelor of Science in Chemical Engineering", 2022, "amy123", "amy1234"),
-("Jake", NULL, "Peralta", "Male", "Bachelor of Science in Development Communication", 2022, "jake123", "jake1234");
+("John", "Emy", "Bautista", "Male", "Bachelor of Science in Computer Science", 2023, "emy123", SHA2("emy1234",0)),
+("Geoffrey", "Gabriel", "Lapaña", "Male", "Bachelor of Science in Computer Science", 2023, "geof123", SHA2("geof1234",0)),
+("Lawrence", "Joel", "Macatangay", "Female", "Bachelor of Science in Computer Science", 2023, "joel123", SHA2("joel1234",0)),
+("Amy", NULL, "Santiago", "Female", "Bachelor of Science in Chemical Engineering", 2022, "amy123", SHA2("amy1234",0)),
+("Jake", NULL, "Peralta", "Male", "Bachelor of Science in Development Communication", 2022, "jake123", SHA2("jake1234",0));
 
 -- Insert into Fee Table
 INSERT INTO fee(fee_amount, due_date, date_paid, payment_status, semester, academic_year, organization_id, member_id)
