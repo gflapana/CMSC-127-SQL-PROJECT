@@ -23,7 +23,15 @@ def sign_up(cur: mariadb.Cursor , first_name: str, last_name: str,  username: st
             [first_name, middle_name, last_name, sex, degree_program, batch, username, password]
         )
 
+        cur.execute(
+            "SELECT member_id from member WHERE member_username = ?",
+            [username]
+        )
+
+        row = cur.fetchone()
+
         return Member(
+            row[0],
             first_name,
             last_name,
             sex,
@@ -49,6 +57,7 @@ def member_sign_in(cur: mariadb.Cursor, username: str, password: str) -> Member 
             return
 
         return Member(
+            row[0],
             row[1],
             row[3],
             row[4],
@@ -79,7 +88,10 @@ def organization_sign_in(cur: mariadb.Cursor, username: str, password: str ) -> 
             [row[0]]
         )
 
-        events = cur.fetchall()
+        events_row = cur.fetchall()
+        events = []
+        for org_event in events_row:
+            events.append(org_event[0])
 
         return Organization(
             row[0],
@@ -90,6 +102,49 @@ def organization_sign_in(cur: mariadb.Cursor, username: str, password: str ) -> 
             events,
             row[5]
         )
+
+    except mariadb.Error as e:
+        print(f"Error: {e}")
+
+def get_member_organizations(cur: mariadb.Cursor, id: str, type: str | None = None, date_established: int | None = None, years_active: int | None = None, ) -> list[Organization] | None :
+    query = "SELECT distinct organization_id, organization_name, organization_type, date_established, years_active from organization natural join organization_has_member WHERE member_id = ?"
+    conditions = []
+    params = [id]
+    organizations = []
+    if type:
+        conditions.append("organization_type = ?")
+        params.append(type)
+    if date_established:
+        conditions.append("date_established = ?")
+        params.append(date_established)
+    if years_active:
+        conditions.append("years_active = ?")
+        params.append(years_active)
+    
+    if conditions:
+        query += " AND ".join(conditions)
+    
+    try:
+        cur.execute(query,params)
+        
+        rows = cur.fetchall()
+        for row in rows:
+            cur.execute("SELECT event_name from organization_event where organization_id = ?", [row[0]])
+            events_row = cur.fetchall()
+            events = []
+            for org_event in events_row:
+                events.append(org_event[0])
+            organizations.append(
+                Organization(
+                    row[0],
+                    row[1],
+                    row[2],
+                    row[3],
+                    row[4],
+                    events,
+                )
+            )
+        return organizations
 
     except mariadb.Error as e:
         print(f"Error: {e}")
