@@ -12,7 +12,7 @@ CREATE TABLE organization(
     date_established YEAR NOT NULL,
     years_active INT(3) NOT NULL,
     organization_username VARCHAR(20) NOT NULL,
-    organization_password VARCHAR(60) NOT NULL,
+    organization_password CHAR(64) NOT NULL,
 
     PRIMARY KEY(organization_id)
 );
@@ -27,7 +27,7 @@ CREATE TABLE member(
     degree_program VARCHAR(70) NOT NULL,
     batch YEAR NOT NULL,
     member_username VARCHAR(20) NOT NULL,
-    member_password VARCHAR(60) NOT NULL,
+    member_password CHAR(64) NOT NULL,
 
     PRIMARY KEY(member_id)
 );

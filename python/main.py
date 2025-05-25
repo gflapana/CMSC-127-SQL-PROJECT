@@ -23,9 +23,9 @@ except mariadb.Error as e:
 cur = conn.cursor()
 
 # Frontend probably goes here?
-currentMember = sign_up(cur, "John", "Bautista", "emy12345", "emy1234", "Male", "Bachelor of Science in Computer Science", 2023)
+currentMember = member_sign_in(cur,"geof123","geof1234")
 
 if currentMember != None:
-  print(currentMember.get_batch())
+  print(f"{currentMember.get_first_name()} {currentMember.get_middle_name()} {currentMember.get_last_name()}")
 
 conn.close()
