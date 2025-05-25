@@ -23,7 +23,15 @@ def sign_up(cur: mariadb.Cursor , first_name: str, last_name: str,  username: st
             [first_name, middle_name, last_name, sex, degree_program, batch, username, password]
         )
 
+        cur.execute(
+            "SELECT member_id from member WHERE member_username = ?",
+            [username]
+        )
+
+        row = cur.fetchone()
+
         return Member(
+            row[0],
             first_name,
             last_name,
             sex,
@@ -49,6 +57,7 @@ def member_sign_in(cur: mariadb.Cursor, username: str, password: str) -> Member 
             return
 
         return Member(
+            row[0],
             row[1],
             row[3],
             row[4],

@@ -22,10 +22,8 @@ except mariadb.Error as e:
 # Get Cursor
 cur = conn.cursor()
 
-orgs = get_member_organizations(cur, 4)
+member =member_sign_in(cur, "emy123","emy1234")
 
-if orgs != None:
-  for org in orgs:
-    print(org.get_name())
+print(member.get_id())
 
 conn.close()
