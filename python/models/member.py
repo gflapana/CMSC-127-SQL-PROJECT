@@ -1,5 +1,5 @@
 class Member:
-    def __init__(self, first_name: str, last_name: str, sex: str, degree_program: str, batch: str, username: str, middle_name: str | None = None):
+    def __init__(self, first_name: str, last_name: str, sex: str, degree_program: str, batch: str, username: str | None = None, middle_name: str | None = None):
         self.__first_name = first_name
         self.__middle_name = middle_name
         self.__last_name = last_name
