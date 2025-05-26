@@ -24,7 +24,8 @@ const signIn = async (
 
         const conn = await pool.getConnection();
         try {
-            const user = await conn.query(query, params);
+            const userQuery = await conn.query(query, params);
+            const user = userQuery[0];
             res.json({ user });
         } catch (err) {
             console.error(err);
