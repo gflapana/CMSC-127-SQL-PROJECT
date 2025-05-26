@@ -9,7 +9,7 @@ const getMembers = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, committee, committee_role, academic_year from member natural join organization_has_member";
+        let query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, committee, committee_role, academic_year from member natural join organization_has_member";
         const conditions: string[] = ['organization_id = ?'];
         const params: (string | number)[] = [];
         let order: string | null = null;
@@ -82,7 +82,7 @@ const getUnpaidMembers = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT distinct first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member natural join fee";
+        let query = "SELECT distinct member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member natural join fee";
         const conditions: string[] = ['organization_id = ?'];
         const params: (string | number)[] = [];
         let order: string | null = null;
@@ -134,7 +134,7 @@ const getExecutiveMembers = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT distinct first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, committee, committee_role, academic_year from member natural join organization_has_member natural join organization WHERE organization_id = ? AND committee='Executive' AND academic_year = ?";
+        let query = "SELECT distinct member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, committee, committee_role, academic_year from member natural join organization_has_member natural join organization WHERE organization_id = ? AND committee='Executive' AND academic_year = ?";
         const params: (string | number)[] = [];
         let order: string | null = null;
 
@@ -175,7 +175,7 @@ const getMembersByRole = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT member.member_id AS 'Member ID',CONCAT(first_name,' ',last_name) AS 'Name', sex AS 'Sex',degree_program AS 'Degree Program',batch AS 'University Batch', committee AS 'Committee', academic_year AS 'Academic Year', semester AS 'Semester', committee_role FROM organization_has_member JOIN member ON organization_has_member.member_id=member.member_id WHERE committee_role=? AND organization_id=? ORDER BY CONCAT(academic_year,semester) desc";
+        let query = "SELECT member.member_id,first_name, IFNULL(middle_name,'') middle_name, sex ,degree_program ,batch, committee, academic_year , semester, committee_role FROM organization_has_member JOIN member ON organization_has_member.member_id=member.member_id WHERE committee_role=? AND organization_id=? ORDER BY CONCAT(academic_year,semester) desc";
         const params: (string | number)[] = [];
 
         if (req.query.committee_role && typeof req.query.committee_role == 'string') {
