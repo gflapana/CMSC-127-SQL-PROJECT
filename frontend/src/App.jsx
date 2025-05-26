@@ -3,6 +3,7 @@
 // import viteLogo from '/vite.svg'
 // import './App.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LogIn from "./pages/login/login";
 
 function App() {
   const routes = [
@@ -10,9 +11,13 @@ function App() {
       path: "/",
       element: <h1>Welcome to the CMSC 127 SQL Project</h1>
     },
+    {
+      path: "/login",
+      element: <LogIn />
+    },
   ]
   const router = createBrowserRouter(routes)
-  return(
+  return (
     <>
       <RouterProvider router={router} />
     </>
