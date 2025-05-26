@@ -126,4 +126,47 @@ const getUnpaidMembers = async (
     }
 };
 
-export { getMembers, getUnpaidMembers };
+
+//params: id (required), academic_year(required), order, desc
+const getExecutiveMembers = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query = "SELECT distinct first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, committee, committee_role, academic_year from member natural join organization_has_member natural join organization WHERE organization_id = ? AND committee='Executive' AND academic_year = ?";
+        const params: (string | number)[] = [];
+        let order: string | null = null;
+
+        if (req.query.id && typeof req.query.id == 'string') {
+            params.push(req.query.id);
+        }
+
+        if (req.query.academic_year && typeof req.query.academic_year == 'string') {
+            params.push(req.query.academic_year);
+        }
+
+        if (req.query.order && typeof req.query.order == 'string') {
+            order = ` ORDER BY ${req.query.order}`;
+        }
+
+
+        if (order) {
+            query += order;
+        }
+
+        const conn = await pool.getConnection();
+        try {
+            const members = await conn.query(query, params);
+            res.json({ members });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+    } catch (e) {
+        next(() => console.error(`Error: ${e}`))
+    }
+};
+
+export { getMembers, getUnpaidMembers, getExecutiveMembers };
