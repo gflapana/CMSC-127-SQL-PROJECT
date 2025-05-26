@@ -500,6 +500,7 @@ WHERE total_debt = (SELECT MAX(total_debt)
     }
 };
 
+// literally lahat ng nasa details (except events, NO editing (di naman nagmamake sense just delete and add new))
 const editDetails = async (
     req: express.Request,
     res: express.Response,
@@ -535,5 +536,140 @@ const editDetails = async (
     }
 };
 
+const deleteMember = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = `DELETE FROM organization_has_member WHERE member_id=?;
+DELETE FROM fee WHERE member_id=?;
+DELETE FROM member WHERE member_id=?;`;
 
-export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails };
+    let params: string[] = [];
+    if (req.body.id && typeof req.body.id == 'number') {
+        params.push(req.body.id);
+        params.push(req.body.id);
+        params.push(req.body.id);
+    }
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const deleteEvent = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "DELETE organization_event WHERE organization_id= ? AND event_name= ?";
+
+    let params: string[] = [];
+    if (req.body.id && typeof req.body.id == 'number' && req.body.event_name && typeof req.body.event_name == 'string') {
+        params.push(req.body.id);
+        params.push(req.body.event_name);
+    }
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const addEvent = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "INSERT INTO organization_event(organization_id, event_name) VALUES (?,?)";
+
+    let params: string[] = [];
+    if (req.body.id && typeof req.body.id == 'number' && req.body.event_name && typeof req.body.event_name == 'string') {
+        params.push(req.body.id);
+        params.push(req.body.event_name);
+    }
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const addFee = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "INSERT INTO fee(fee_amount, due_date, date_paid, payment_status, semester, academic_year, organization_id, member_id) VALUES (?,?,?,?,?,?,?,?)";
+
+    let params: (string | number | null)[] = [];
+    
+    params.push(req.body.fee_amount);
+    params.push(req.body.due_date);
+    params.push(req.body.date_paid);
+    params.push(req.body.payment_status);
+    params.push(req.body.semester);
+    params.push(req.body.academic_year);
+    params.push(req.body.organization_id);
+    params.push(req.body.member_id);
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee };
