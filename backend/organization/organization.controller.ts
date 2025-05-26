@@ -500,5 +500,40 @@ WHERE total_debt = (SELECT MAX(total_debt)
     }
 };
 
+const editDetails = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "UPDATE organization SET organization_name = ?, organization_type = ?, date_established = ?, years_active = ? WHERE organization_id = ?";
+    let params: string[] = [];
+    if (req.body.id && typeof req.body.id == 'number' && req.body.organization_name && typeof req.body.organization_name == 'string' && req.body.organization_type && typeof req.body.organization_type == 'string' && req.body.date_established && typeof req.body.date_established == 'number' && req.body.years_active && typeof req.body.years_active == 'number') {
+        params.push(req.body.organization_name);
+        params.push(req.body.organization_type);
+        params.push(req.body.date_established);
+        params.push(req.body.years_active);
+        params.push(req.body.id);
+    }
 
-export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor };
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            // await conn.commit();
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails };
