@@ -30,6 +30,8 @@ const signIn = async (
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
         }
 
     } catch (err) {

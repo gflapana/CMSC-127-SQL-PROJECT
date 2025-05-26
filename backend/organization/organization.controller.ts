@@ -67,10 +67,13 @@ const getMembers = async (
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
         }
 
-    } catch (e) {
-        next(() => console.error(`Error: ${e}`))
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
@@ -119,10 +122,13 @@ const getUnpaidMembers = async (
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
         }
 
-    } catch (e) {
-        next(() => console.error(`Error: ${e}`))
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
@@ -162,13 +168,17 @@ const getExecutiveMembers = async (
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
-        }
+        } finally {
+            conn.release();
+        } 
 
-    } catch (e) {
-        next(() => console.error(`Error: ${e}`))
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
+// params: id (required), committee_role (required)
 const getMembersByRole = async (
     req: express.Request,
     res: express.Response,
@@ -193,11 +203,156 @@ const getMembersByRole = async (
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
         }
 
-    } catch (e) {
-        next(() => console.error(`Error: ${e}`))
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
-export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole };
+//Params: id (required), semester (required), academic year (required)
+const getLatePayments = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query = ("SELECT ohm.member_id, m.first_name, IFNULL(m.middle_name,'') as middle_name, last_name, f.fee_amount, f.due_date, f.date_paid, f.payment_status, f.semester, f.academic_year FROM organization AS o JOIN organization_has_member AS ohm ON o.organization_id = ohm.organization_id JOIN member AS m ON ohm.member_id = m.member_id JOIN fee AS f ON ohm.member_id = f.member_id WHERE (f.due_date < f.date_paid AND ohm.organization_id = ? AND f.semester = ? AND f.academic_year = ?)");
+        const params: (string | number)[] = [];
+
+        if (req.query.id && typeof req.query.id == 'string') {
+            params.push(req.query.id);
+        }
+
+        if (req.query.semester && typeof req.query.semester == 'string') {
+            params.push(req.query.semester);
+        }
+
+        if (req.query.academic_year && typeof req.query.academic_year == 'string') {
+            params.push(req.query.academic_year);
+        }
+
+
+        const conn = await pool.getConnection();
+        try {
+            const payments = await conn.query(query, params);
+            res.json({ payments });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const getPercentage = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query;
+
+        if (req.query.id && typeof req.query.id == 'string' && req.query.semesters && typeof req.query.semesters == 'string')
+            query = `SELECT 
+    ${parseInt(req.query.semesters)} as past_n_emesters,
+    100 * (SELECT COUNT(*) 
+     FROM organization_has_member AS ohm 
+     JOIN organization AS o ON ohm.organization_id = o.organization_id 
+     WHERE ohm.member_status = 'Active' 
+       AND o.organization_id = ${parseInt(req.query.id)} 
+       AND (
+           CASE 
+               WHEN semester = '1st Semester' THEN 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+               ELSE 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+           END
+       ) <= ${parseInt(req.query.semesters)} 
+    ) / (SELECT COUNT(*) 
+     FROM organization_has_member AS ohm 
+     JOIN organization AS o ON ohm.organization_id = o.organization_id 
+     WHERE o.organization_id = ${parseInt(req.query.id)} 
+       AND (
+           CASE 
+               WHEN semester = '1st Semester' THEN 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+               ELSE 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+           END
+       ) <= ${parseInt(req.query.semesters)}
+    ) AS active_count_percentage, 
+
+    100 * (SELECT COUNT(*) 
+     FROM organization_has_member AS ohm 
+     JOIN organization AS o ON ohm.organization_id = o.organization_id 
+     WHERE ohm.member_status = 'Inactive' 
+       AND o.organization_id = ${parseInt(req.query.id)} 
+       AND (
+           CASE 
+               WHEN semester = '1st Semester' THEN 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+               ELSE 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+           END
+       ) <= ${parseInt(req.query.semesters)} 
+    ) / (SELECT COUNT(*) 
+     FROM organization_has_member AS ohm 
+     JOIN organization AS o ON ohm.organization_id = o.organization_id 
+     WHERE o.organization_id = ${parseInt(req.query.id)} 
+       AND (
+           CASE 
+               WHEN semester = '1st Semester' THEN 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+               ELSE 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+           END
+       ) <= ${parseInt(req.query.semesters)} 
+    ) AS inactive_count_percentage,
+
+    (SELECT COUNT(*) 
+     FROM organization_has_member AS ohm 
+     JOIN organization AS o ON ohm.organization_id = o.organization_id 
+     WHERE o.organization_id = ${parseInt(req.query.id)} 
+       AND (
+           CASE 
+               WHEN semester = '1st Semester' THEN 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+               ELSE 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+           END
+       ) <= ${parseInt(req.query.semesters)} 
+    ) AS total_members`;
+
+
+
+
+        const conn = await pool.getConnection();
+        try {
+            const percentageQuery = await conn.query(query);
+            percentageQuery[0].total_members = Number(percentageQuery[0].total_members);
+            let percentage = percentageQuery[0];
+            res.json({ percentage });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage };
