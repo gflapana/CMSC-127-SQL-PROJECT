@@ -2,7 +2,7 @@ import pool from "../config/connectDB"
 import express from "express";
 
 
-// Queries: id (required), sex, degree_program, committee, role (committee_role), academic_year, order (order by), desc (true if desc)
+// Queries: id (NOT required, you might need it :D ), sex, degree_program, committee, role (committee_role), academic_year, order (order by), desc (true if desc)
 const getMembers = async (
     req: express.Request,
     res: express.Response,
@@ -10,12 +10,13 @@ const getMembers = async (
 ) => {
     try {
         let query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, committee, committee_role, academic_year from member natural join organization_has_member";
-        const conditions: string[] = ['organization_id = ?'];
+        const conditions: string[] = [];
         const params: (string | number)[] = [];
         let order: string | null = null;
         let group: string | null = null;
 
         if (req.query.id && typeof req.query.id == 'string') {
+            conditions.push('organization_id = ?');
             params.push(req.query.id);
         }
 
@@ -46,8 +47,9 @@ const getMembers = async (
         if (req.query.desc) {
             order += " DESC";
         }
-
-        query += " WHERE " + conditions.join(' AND ');
+        if (conditions) {
+            query += " WHERE " + conditions.join(' AND ');
+        }
 
         if (group) {
             query += group;
@@ -170,7 +172,7 @@ const getExecutiveMembers = async (
             res.status(500).json({ error: 'Internal Server Error' });
         } finally {
             conn.release();
-        } 
+        }
 
     } catch (err) {
         console.error(err);
@@ -253,6 +255,7 @@ const getLatePayments = async (
     }
 };
 
+//params: id(required), semesters (number of semesters, required)
 const getPercentage = async (
     req: express.Request,
     res: express.Response,
@@ -354,5 +357,148 @@ const getPercentage = async (
     }
 };
 
+//params: id (required), date(required)
+const getAlumni = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query = `SELECT m.member_id, m.first_name, IFNULL(m.middle_name,'') middle_name, last_name, ohm.semester, ohm.academic_year
+FROM organization AS o 
+JOIN organization_has_member AS ohm  
+ON o.organization_id = ohm.organization_id 
+JOIN member AS m
+ON m.member_id = ohm.member_id
+WHERE ohm.member_status = 'alumni' 
+  AND o.organization_id = ? 
+  AND (
+      (MONTH(?) BETWEEN 8 AND 12 AND ohm.semester = '1st Semester') OR
+      (MONTH(?) BETWEEN 1 AND 7 AND ohm.semester = '2nd Semester')
+  );`;
+        const params: (string | number)[] = [];
 
-export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage };
+        if (req.query.id && typeof req.query.id == 'string') {
+            params.push(req.query.id);
+        }
+
+        if (req.query.date && typeof req.query.date == 'string') {
+            params.push(req.query.date);
+            params.push(req.query.date);
+        }
+        const conn = await pool.getConnection();
+        try {
+            const alumni = await conn.query(query, params);
+            res.json({ alumni });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+const getTotalFees = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query = `SELECT 
+    SUM(CASE WHEN f.date_paid IS NULL THEN f.fee_amount ELSE 0 END) AS total_unpaid_fees,
+    SUM(CASE WHEN f.date_paid IS NOT NULL THEN f.fee_amount ELSE 0 END) AS total_paid_fees,
+    ? AS as_of_date
+FROM fee AS f
+JOIN organization AS o
+ON f.organization_id = o.organization_id
+WHERE o.organization_id = ?
+  AND f.due_date <= ?`;
+
+        const params: (string | number)[] = [];
+
+        if (req.query.id && typeof req.query.id == 'string' && req.query.date && typeof req.query.date == 'string') {
+            params.push(req.query.date);
+            params.push(req.query.id);
+            params.push(req.query.date);
+        }
+
+
+
+        const conn = await pool.getConnection();
+        try {
+            const payments = await conn.query(query, params);
+            res.json({ payments });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+//params: id(required), semester(required)
+const getHighestDebtor = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query = `SELECT m.member_id, m.first_name, IFNULL(m.middle_name,'') middle_name, m.last_name, m.sex, m.degree_program, m.batch, debts.total_debt
+FROM (
+    SELECT f.member_id, SUM(f.fee_amount) AS total_debt
+    FROM fee AS f
+    JOIN organization_has_member AS ohm ON f.member_id = ohm.member_id
+    WHERE f.date_paid IS NULL 
+      AND ohm.organization_id = ?
+      AND f.semester = ?
+    GROUP BY f.member_id
+) AS debts
+JOIN member as m on debts.member_id = m.member_id
+WHERE total_debt = (SELECT MAX(total_debt) 
+                    FROM (
+                        SELECT SUM(f.fee_amount) AS total_debt
+                        FROM fee AS f
+                        JOIN organization_has_member AS ohm ON f.member_id = ohm.member_id
+                        WHERE f.date_paid IS NULL 
+                          AND ohm.organization_id = ?
+                          AND f.semester = ?
+                        GROUP BY f.member_id
+                    ) AS max_debts)`;
+        const params: (string | number)[] = [];
+
+        if (req.query.id && typeof req.query.id == 'string' && req.query.semester && typeof req.query.semester == 'string') {
+            params.push(req.query.id);
+            params.push(req.query.semester);
+            params.push(req.query.id);
+            params.push(req.query.semester);
+        }
+
+        const conn = await pool.getConnection();
+        try {
+            const debtor = await conn.query(query, params);
+            res.json({ debtor });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
+export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor };
