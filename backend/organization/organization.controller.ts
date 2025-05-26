@@ -19,7 +19,7 @@ const getMembers = async (
             params.push(req.query.id);
         }
 
-        if (req.query.sex && typeof req.query.sex == 'string'){
+        if (req.query.sex && typeof req.query.sex == 'string') {
             conditions.push('sex = ?');
             params.push(req.query.sex)
         }
@@ -43,7 +43,7 @@ const getMembers = async (
         if (req.query.order && typeof req.query.order == 'string') {
             order = ` ORDER BY ${req.query.order}`;
         }
-        if (req.query.desc){
+        if (req.query.desc) {
             order += " DESC";
         }
 
@@ -169,4 +169,35 @@ const getExecutiveMembers = async (
     }
 };
 
-export { getMembers, getUnpaidMembers, getExecutiveMembers };
+const getMembersByRole = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query = "SELECT member.member_id AS 'Member ID',CONCAT(first_name,' ',last_name) AS 'Name', sex AS 'Sex',degree_program AS 'Degree Program',batch AS 'University Batch', committee AS 'Committee', academic_year AS 'Academic Year', semester AS 'Semester', committee_role FROM organization_has_member JOIN member ON organization_has_member.member_id=member.member_id WHERE committee_role=? AND organization_id=? ORDER BY CONCAT(academic_year,semester) desc";
+        const params: (string | number)[] = [];
+
+        if (req.query.committee_role && typeof req.query.committee_role == 'string') {
+            params.push(req.query.committee_role);
+        }
+
+        if (req.query.id && typeof req.query.id == 'string') {
+            params.push(req.query.id);
+        }
+
+        const conn = await pool.getConnection();
+        try {
+            const members = await conn.query(query, params);
+            res.json({ members });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+    } catch (e) {
+        next(() => console.error(`Error: ${e}`))
+    }
+};
+
+export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole };
