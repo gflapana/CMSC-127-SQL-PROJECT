@@ -12,7 +12,7 @@ const signIn = async (
         if (req.body.type == 'member') {
             query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member WHERE member_username = ? AND member_password = SHA2(?,0)";
         } else if (req.body.type == "organization") {
-            query = "SELECT organization_id, organization_name, organization_type, date_established, years_active from organization WHERE organization_username = ? AND member_password = SHA2(?,0)";
+            query = "SELECT organization_id, organization_name, organization_type, date_established, years_active from organization WHERE organization_username = ? AND organization_password = SHA2(?,0)";
         }
 
         if (req.body.username && typeof req.body.username === 'string') {
