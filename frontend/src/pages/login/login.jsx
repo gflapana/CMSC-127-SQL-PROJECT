@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import { Eye, EyeOff as EyeClosed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios.js";
@@ -12,7 +12,7 @@ const LogIn = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [toggle, setToggle] = useState(false);
     const [error, setError] = useState("");
-
+    const [success, setSuccess] = useState(false);
 
     const navigate = useNavigate();
 
@@ -24,16 +24,29 @@ const LogIn = () => {
                 username: username,
                 password: password,
                 type: role
-            })
+            });
             if (response.data && response.data.user) {
-                setAuth({ user: response.data.user, role: role });
-                localStorage.setItem('auth', JSON.stringify({ user: response.data.user, role: role }));
-                console.log("Login successful:", response.data);
+                if (role === "organization") {
+                    console.log(response.data.user.organization_id, "logged in successfully");
+                    setAuth({ user: response.data.user.organization_id, role: role });
+                    localStorage.setItem('auth', JSON.stringify({ user: response.data.user.organization_id, role: role }));
+                }
+
+
+                setSuccess(true);
+                setError("");
+
+                setTimeout(() => navigate(role === "organization" ? '/org-home' : '/user-home', { replace: true }), 1500);
+            } else {
+                setError("Invalid credentials.");
+                setSuccess(false);
             }
         } catch (error) {
+            setError("Login failed. Please try again.");
+            setSuccess(false);
             console.error("Login failed:", error);
         }
-    }
+    };
 
     return (
         <div className={`h-screen w-screen flex items-center justify-center ${toggle ? "bg-blue-900" : "bg-gray-100"}`}>
@@ -53,6 +66,16 @@ const LogIn = () => {
                 <h2 className={`text-2xl font-bold my-6 text-center ${toggle ? "text-white" : "text-blue-500"}`}>
                     Welcome Back!
                 </h2>
+                {success && (
+                    <div className="mb-4 p-3 rounded bg-green-100 text-green-700 text-center border border-green-300">
+                        Login successful!
+                    </div>
+                )}
+                {error && (
+                    <div className="mb-4 p-3 rounded bg-red-100 text-red-700 text-center border border-red-300">
+                        {error}
+                    </div>
+                )}
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                     <input
                         type="text"
@@ -81,7 +104,6 @@ const LogIn = () => {
                     </div>
                     <button
                         type="submit"
-                        // onClick={() => handleSubmit()}
                         className={`py-2 rounded transition cursor-pointer ${toggle ? "bg-white text-blue-500 hover:bg-blue-100" : "bg-blue-500 text-white hover:bg-blue-600"}`}
                     >
                         Log In
@@ -98,7 +120,6 @@ const LogIn = () => {
                         >
                             Sign Up
                         </button>
-                        {/* <a href="/sign-up" className={`${toggle ? "text-black" : "text-blue-500"} underline`} >Sign Up</a> */}
                     </p>
                 </form>
             </div>

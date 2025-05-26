@@ -3,11 +3,14 @@
 // import viteLogo from '/vite.svg'
 // import './App.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LogIn from "./pages/login/login";
-import MemberSignUp from "./pages/signup/member_signup";
-import OrgSignUp from "./pages/signup/org_signup";
+import LogIn from "./pages/login/Login";
+import MemberSignUp from "./pages/signup/Member_Signup";
+import OrgSignUp from "./pages/signup/Org_Signup";
 import RequireAuth from "./components/RequireAuth";
-import Unauthorized from "./pages/unauthorized/unauthorized";
+import Unauthorized from "./pages/unauthorized/Unauthorized";
+import OrgHome from "./pages/org-home/OrgHome";
+import OrgFees from "./pages/org-fees/OrgFees";
+import OrgMembers from "./pages/org-members/OrgMembers";
 
 function App() {
   const routes = [
@@ -35,7 +38,31 @@ function App() {
       path: "/user-home",
       element: (
         <RequireAuth allowedRole="member">
-          <h1>User Home Page</h1>
+
+        </RequireAuth>
+      )
+    },
+    {
+      path: "/org-home",
+      element: (
+        <RequireAuth allowedRole="organization">
+          <OrgHome />
+        </RequireAuth>
+      )
+    },
+    {
+      path: '/org-fees',
+      element: (
+        <RequireAuth allowedRole="organization">
+          <OrgFees />
+        </RequireAuth>
+      )
+    },
+    {
+      path: "/org-members",
+      element: (
+        <RequireAuth allowedRole="organization">
+          <OrgMembers />
         </RequireAuth>
       )
     }
