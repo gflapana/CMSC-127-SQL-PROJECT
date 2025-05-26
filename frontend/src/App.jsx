@@ -6,6 +6,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LogIn from "./pages/login/login";
 import MemberSignUp from "./pages/signup/member_signup";
 import OrgSignUp from "./pages/signup/org_signup";
+import RequireAuth from "./components/RequireAuth";
+import Unauthorized from "./pages/unauthorized/unauthorized";
 
 function App() {
   const routes = [
@@ -24,6 +26,18 @@ function App() {
     {
       path: "/org-sign-up",
       element: <OrgSignUp />
+    },
+    {
+      path: "/unauthorized",
+      element: <Unauthorized />
+    },
+    {
+      path: "/user-home",
+      element: (
+        <RequireAuth allowedRole="member">
+          <h1>User Home Page</h1>
+        </RequireAuth>
+      )
     }
   ]
   const router = createBrowserRouter(routes)

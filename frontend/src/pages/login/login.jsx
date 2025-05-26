@@ -1,11 +1,39 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Eye, EyeOff as EyeClosed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axios.js";
+import useAuth from "../../hooks/useAuth.jsx";
+
 const LogIn = () => {
+    const { setAuth } = useAuth();
+
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [toggle, setToggle] = useState(false);
+    const [error, setError] = useState("");
+
+
     const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const role = toggle ? "organization" : "member";
+        try {
+            const response = await api.post('/auth/login', {
+                username: username,
+                password: password,
+                type: role
+            })
+            if (response.data && response.data.user) {
+                setAuth({ user: response.data.user, role: role });
+                localStorage.setItem('auth', JSON.stringify({ user: response.data.user, role: role }));
+                console.log("Login successful:", response.data);
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
+    }
 
     return (
         <div className={`h-screen w-screen flex items-center justify-center ${toggle ? "bg-blue-900" : "bg-gray-100"}`}>
@@ -25,10 +53,11 @@ const LogIn = () => {
                 <h2 className={`text-2xl font-bold my-6 text-center ${toggle ? "text-white" : "text-blue-500"}`}>
                     Welcome Back!
                 </h2>
-                <form className="flex flex-col gap-4">
+                <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                     <input
                         type="text"
                         placeholder={toggle ? "Organization Username" : "Username"}
+                        onChange={(e) => setUsername(e.target.value)}
                         className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 w-full ${toggle ? "focus:ring-white bg-blue-400 text-white placeholder-white border-blue-300" : "focus:ring-blue-400 text-black"}`}
                         required
                     />
@@ -52,6 +81,7 @@ const LogIn = () => {
                     </div>
                     <button
                         type="submit"
+                        // onClick={() => handleSubmit()}
                         className={`py-2 rounded transition cursor-pointer ${toggle ? "bg-white text-blue-500 hover:bg-blue-100" : "bg-blue-500 text-white hover:bg-blue-600"}`}
                     >
                         Log In
@@ -60,9 +90,9 @@ const LogIn = () => {
                         {toggle ? "Create an Organization? " : "Don't have an account yet? "}
                         <button
                             onClick={() => {
-                                toggle 
-                                ? navigate('/org-sign-up', { replace: true }) 
-                                : navigate('/member-sign-up', { replace: true });
+                                toggle
+                                    ? navigate('/org-sign-up', { replace: true })
+                                    : navigate('/member-sign-up', { replace: true });
                             }}
                             className={`${toggle ? "text-white" : "text-blue-500"} underline hover: cursor-pointer`}
                         >
