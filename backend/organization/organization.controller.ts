@@ -576,7 +576,7 @@ const editDetails = async (
     params.push(req.body.organization_type);
     params.push(req.body.date_established);
     params.push(req.body.years_active);
-    params.push(req.body.id);
+    params.push(req.body.organization_id);
     console.log(params);
     try {
         const conn = await pool.getConnection();
