@@ -785,7 +785,7 @@ const getFees = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT fee_id, member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, semester, academic_year from member natural join fee";
+        let query = "SELECT fee_id, member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, payment_status, semester, academic_year from member natural join fee";
         const conditions: string[] = [];
         const params: (string | number | null)[] = [];
         let order: string | null = null;
@@ -815,20 +815,39 @@ const getFees = async (
             params.push(req.query.date_paid);
         }
 
+        if (req.query.payment_status && typeof req.query.payment_status == 'string') {
+            conditions.push(`payment_status like '%${req.query.payment_status}%'`);
+        }
+
         if (req.query.semester && typeof req.query.semester == 'string') {
-            conditions.push(`semester like '%${req.query.semester}'`);
+            conditions.push(`semester like '%${req.query.semester}%'`);
         }
 
         if (req.query.academic_year && typeof req.query.academic_year == 'string') {
             conditions.push('academic_year =  ?');
             params.push(req.query.academic_year);
         }
+        if (req.query.order && typeof req.query.order == 'string') {
+            order = ` ORDER BY ${req.query.order}`;
+        }
+
+        if (req.query.desc && req.query.desc == 'true') {
+            order += " DESC";
+        }
+        if (conditions.length != 0) {
+            query += " WHERE " + conditions.join(' AND ');
+        }
+
+        if (order) {
+            query += order;
+        }
 
         console.log(params);
         const conn = await pool.getConnection();
         try {
-            await conn.query(query, params);
-            res.json({ status: "success" });
+            console.log(query);
+            const fees = await conn.query(query, params);
+            res.json({ fees });
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
