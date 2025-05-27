@@ -17,7 +17,7 @@ const DeleteMember = () => {
 
         const getAllEligibleMembers = async () => {
             try {
-                const allEligibleMembers = await api.get(`/organization/findEligibleMembers?id=${id}`);
+                const allEligibleMembers = await api.get(`/organization/findDeletableMembers?id=${id}`);
                 setEligibleMembers(Array.isArray(allEligibleMembers.data.members) ? allEligibleMembers.data.members : []);
             } catch (error) {
                 console.error("Error fetching members:", error);
@@ -32,7 +32,7 @@ const DeleteMember = () => {
 
     const deleteMember = async () => {
         console.log(memberId);
-        await api.post(`/organization/deleteMember`, { member_id: memberId })
+        await api.post(`/organization/deleteMember`, { member_id: memberId, id: id })
     }
 
     return (

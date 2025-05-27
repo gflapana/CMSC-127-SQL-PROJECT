@@ -51,8 +51,8 @@ const UserProfile = () => {
         try {
             await api.put(`/member/editDetails`, memberData);
             setUser(memberData)
-            setAuth({ user: member_id, role: "member" });
-            localStorage.setItem('auth', JSON.stringify({ user: organizationData.member_id, role: "member" }));
+            setAuth({ user: memberData, role: "member" });
+            localStorage.setItem('auth', JSON.stringify({ user: memberData, role: "member" }));
             handleCancel();
         } catch (error) {
             console.error("Error updating member:", error);
@@ -145,10 +145,10 @@ const UserProfile = () => {
                                         setIsEditing(true);
                                         handleEditClick(member);
                                     }}
-                                    className="text-blue-500 hover:text-blue-700 mb-6"
+                                    className="text-blue-500 hover:text-blue-700 mb-4"
                                     aria-label={`Edit member ${user?.first_name} ${user?.last_name}`}
                                 >
-                                    <Edit2 className="w-5 h-5" />
+                                    <Edit2 className="w-5 h-4" />
                                 </button>
                             )}
                             <p className="text-gray-700 mb-6">Profile</p>
@@ -157,7 +157,7 @@ const UserProfile = () => {
                             </h1>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-md mx-auto">
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
-                                    <p className="text-gray-600 font-semibold">user ID:</p>
+                                    <p className="text-gray-600 font-semibold">User ID:</p>
                                     <p className="text-gray-800">{user?.member_id || "N/A"}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
