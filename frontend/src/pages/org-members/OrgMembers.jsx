@@ -1,12 +1,11 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
 import { ChartBar, Menu, ArrowDown } from 'lucide-react';
 
 const OrgMembers = () => {
-    const { auth } = useAuth();
-
+    const { auth, setAuth } = useAuth();
     const [members, setMembers] = useState([]);
     const [percentageMems, setPercentageMems] = useState([]);
     const [alumni, setAlumni] = useState([]);
@@ -19,19 +18,26 @@ const OrgMembers = () => {
     const [semester, setSemester] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
-    const [pastSemesters, setPastSemesters] = useState("");
+    const [pastSemesters, setPastSemesters] = useState(0);
     const [dateQuery, setDateQuery] = useState("");
     const [dateInput, setDateInput] = useState("");
 
     const org = auth?.user;
     const id = org.organization_id;
-
+    console.log("Members Organization ID:", id);
 
     useEffect(() => {
         setSortOrder("asc");
         setSearchQuery("");
         setSearchInput("");
-    }, [selectedFilter]);
+        setSemester("");
+        setAcadYearInput("");
+        setAcadYearQuery("");
+        setPastSemesters(0);
+        setDateQuery("");
+        setDateInput("");
+        setFilterSort("committee_role");
+    }, [selectedFilter, tableView]);
 
     useEffect(() => {
         const getAllMembersFiltered = async () => {
@@ -65,7 +71,6 @@ const OrgMembers = () => {
         const getAllAlumni = async () => {
             try {
                 const allAlumni = await api.get(`/organization/getAlumni?id=${id}&date=${dateQuery}`);
-                setMembers(Array.isArray(allAlumni.data.members) ? allAlumni.data.members : []);
                 setAlumni(Array.isArray(allAlumni.data.alumni) ? allAlumni.data.alumni : []);
                 console.log("Alumni Data:", allAlumni.data.alumni);
             } catch (error) {
@@ -207,7 +212,7 @@ const OrgMembers = () => {
                                     <select
                                         onChange={handleSemChange}
                                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="Choose semester"
+                                        defaultValue=""
                                     >
                                         <option value="">All semester</option>
                                         <option value="1st Semester">1st semester</option>
@@ -281,7 +286,7 @@ const OrgMembers = () => {
                         ) : (
                             <div className="flex gap-6">
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
-                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Summary</h2>
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Inactive and Active Percentage Count</h2>
                                     {/* Search bar for "How many semesters from now?" without form and submit button */}
                                     <input
                                         type="number"
@@ -300,7 +305,8 @@ const OrgMembers = () => {
                                     </p>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
-                                    {/* Date search bar */}
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Search Alumni based on Date </h2>
+
                                     <form
                                         onSubmit={e => {
                                             e.preventDefault();
@@ -310,7 +316,7 @@ const OrgMembers = () => {
                                     >
                                         <input
                                             type="text"
-                                            placeholder="Search by date..."
+                                            placeholder="YYYY-MM-DD"
                                             value={dateInput}
                                             onChange={e => setDateInput(e.target.value)}
                                             className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"

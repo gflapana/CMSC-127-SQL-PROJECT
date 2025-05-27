@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown } from 'lucide-react';
+import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
 
 const OrgFees = () => {
     const { auth, setAuth } = useAuth();
@@ -14,26 +14,52 @@ const OrgFees = () => {
 
     const [members, setMembers] = useState([]);
     const [tableView, setTableView] = useState("viewall");
+    const [selectedFilter, setSelectedFilter] = useState("");
+    const [totalFees, setTotalFees] = useState();;
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
     const [semester, setSemester] = useState("");
+    const [dateQuery, setDateQuery] = useState("");
+    const [dateInput, setDateInput] = useState("");
 
     useEffect(() => {
         const getMemFees = async () => {
             try {
                 const allMemFees = await api.get(
-                    `organization/getFees/?id=${id}&academic_year=${acadYearQuery}&semester=${semester}`
+                    `organization/getFees/?id=${id}&academic_year=${acadYearQuery}&semester=${semester}&payment_status=${selectedFilter}`
                 )
                 setMembers(Array.isArray(allMemFees.data.fees) ? allMemFees.data.fees : []);
+                console.log("semester:", semester);
                 console.log("Fetched Members:", allMemFees.data.fees);
             } catch (error) {
                 console.error("Error fetching members:", error);
             }
         };
         getMemFees();
-    }, [id, acadYearQuery, semester])
+    }, [id, acadYearQuery, semester, selectedFilter, tableView])
+
+    useEffect(() => {
+        const getOrgFees = async () => {
+            try {
+                console.log("Fetching total fees for organization ID:", id);
+                const getAllFees = await api.get(
+                    `organization/getTotalFees/?id=${id}&date=${dateQuery}`
+                );
+                console.log("Total Fees Response:", getAllFees.data);
+                console.log("Total Fees Response: payments", getAllFees.data.payments);
+                setTotalFees(getAllFees.data.payments);
+            } catch (error) {
+                console.error("Error fetching total fees:", error);
+            }
+        }
+
+        getOrgFees();
+    }, [id, dateQuery]);
+
+    const handleSelectChange = (e) => setSelectedFilter(e.target.value);
+
 
     const handleSemChange = (e) => {
         setSemester(e.target.value);
@@ -117,22 +143,19 @@ const OrgFees = () => {
                     {tableView === "viewall" && (
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                             <div className="flex items-center gap-2 w-full md:w-auto">
-                                {/* <div className="relative">
+                                <div className="relative">
                                     <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                     <select
                                         onChange={handleSelectChange}
                                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="committee_role"
+                                        defaultValue=""
                                     >
-                                        <option value="committee_role">Committee Role</option>
-                                        <option value="member_status">Status</option>
-                                        <option value="degree_program">Degree Program</option>
-                                        <option value="sex">Sex</option>
-                                        <option value="year_joined">Org Batch</option>
-                                        <option value="committee">Committee</option>
-
+                                        <option value="">All Status</option>
+                                        <option value="Paid">Paid</option>
+                                        <option value="Unpaid">Unpaid</option>
+                                        <option value="Paid Late">Paid Late</option>
                                     </select>
-                                </div> */}
+                                </div>
                                 {/* <form onSubmit={handleSearchSubmit} className="flex w-full md:w-auto">
                                     <input
                                         type="text"
@@ -221,7 +244,7 @@ const OrgFees = () => {
                                                         })
                                                         : ""}
                                                 </td>
-                                                <td className="px-3 py-2">
+                                                <td className="px-3 py-2 italic">
                                                     {member.date_paid
                                                         ? new Date(member.date_paid).toLocaleDateString('en-US', {
                                                             year: 'numeric',
@@ -239,80 +262,103 @@ const OrgFees = () => {
                                 </tbody>
                             </table>
                         ) : (
-                            <div></div>
-                            // <div className="flex gap-6">
-                            //     <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
-                            //         <h2 className="text-lg font-semibold mb-4 text-blue-600">Summary</h2>
-                            //         {/* Search bar for "How many semesters from now?" without form and submit button */}
-                            //         <input
-                            //             type="number"
-                            //             min="0"
-                            //             placeholder="How many semesters from now?"
-                            //             value={pastSemesters}
-                            //             onChange={handlePastSemChange}
-                            //             className="border px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full rounded"
-                            //         />
-                            //         <p className="text-gray-700 mb-2">Total Members: {percentageMems.total_members}</p>
-                            //         <p className="text-gray-700 mb-2">
-                            //             Active: {percentageMems.active_count_percentage ? `${parseFloat(percentageMems.active_count_percentage).toFixed(0)}%` : "0%"}
-                            //         </p>
-                            //         <p className="text-gray-700 mb-2">
-                            //             Inactive: {percentageMems.inactive_count_percentage ? `${parseFloat(percentageMems.inactive_count_percentage).toFixed(0)}%` : "0%"}
-                            //         </p>
-                            //     </div>
-                            //     <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
-                            //         {/* Date search bar */}
-                            //         <form
-                            //             onSubmit={e => {
-                            //                 e.preventDefault();
-                            //                 setDateQuery(dateInput);
-                            //             }}
-                            //             className="flex mb-4"
-                            //         >
-                            //             <input
-                            //                 type="text"
-                            //                 placeholder="Search by date..."
-                            //                 value={dateInput}
-                            //                 onChange={e => setDateInput(e.target.value)}
-                            //                 className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"
-                            //             />
-                            //             <button
-                            //                 type="submit"
-                            //                 className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
-                            //             >
-                            //                 Search
-                            //             </button>
-                            //         </form>
-                            //         <table className="text-sm border-collapse w-full">
-                            //             <thead className="bg-gray-100">
-                            //                 <tr>
-                            //                     <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
-                            //                     <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
-                            //                     <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
-                            //                     <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Academic year</th>
-                            //                 </tr>
-                            //             </thead>
-                            //             <tbody>
-                            //                 {alumni.length === 0 ? (
-                            //                     <tr>
-                            //                         <td colSpan={3} className="text-center py-4 text-gray-400">
-                            //                             No members found.
-                            //                         </td>
-                            //                     </tr>
-                            //                 ) : (
-                            //                     alumni.map((alum, idx) => (
-                            //                         <tr key={alum.id || idx}>
-                            //                             <td className="px-3 py-2">{alum.member_id}</td>
-                            //                             <td className="px-3 py-2">{alum.first_name + " " + alum.last_name}</td>
-                            //                             <td className="px-3 py-2">{alum.semester}</td>
-                            //                             <td className="px-3 py-2">{alum.acad_year}</td>
-                            //                         </tr>
-                            //                     ))
-                            //                 )}
-                            //             </tbody>
-                            //         </table>
-                            //     </div>
-                            // </div>
+                            <div className="flex gap-6">
+                                <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Paid and Unpaid Fees</h2>
+                                    <form
+                                        onSubmit={e => {
+                                            e.preventDefault();
+                                            setDateQuery(dateInput);
+                                        }}
+                                        className="flex mb-4"
+                                    >
+                                        <input
+                                            type="text"
+                                            placeholder="YYYY-MM-DD"
+                                            value={dateInput}
+                                            onChange={e => setDateInput(e.target.value)}
+                                            className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
+                                        >
+                                            Search
+                                        </button>
+                                    </form>
+                                    <p className="text-gray-700 mb-2">
+                                        {/* {totalFees.total_paid_fees} */}
+                                    </p>
+                                    {/* Search bar for "How many semesters from now?" without form and submit button */}
+                                    {/* <input
+                                        type="number"
+                                        min="0"
+                                        placeholder="How many semesters from now?"
+                                        value={pastSemesters}
+                                        onChange={handlePastSemChange}
+                                        className="border px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full rounded"
+                                    />
+                                    <p className="text-gray-700 mb-2">Total Members: {percentageMems.total_members}</p>
+                                    <p className="text-gray-700 mb-2">
+                                        Active: {percentageMems.active_count_percentage ? `${parseFloat(percentageMems.active_count_percentage).toFixed(0)}%` : "0%"}
+                                    </p>
+                                    <p className="text-gray-700 mb-2">
+                                        Inactive: {percentageMems.inactive_count_percentage ? `${parseFloat(percentageMems.inactive_count_percentage).toFixed(0)}%` : "0%"}
+                                    </p> */}
+                                </div>
+                                <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
+                                    {/* Date search bar */}
+                                    {/* <form
+                                        onSubmit={e => {
+                                            e.preventDefault();
+                                            setDateQuery(dateInput);
+                                        }}
+                                        className="flex mb-4"
+                                    >
+                                        <input
+                                            type="text"
+                                            placeholder="Search by date..."
+                                            value={dateInput}
+                                            onChange={e => setDateInput(e.target.value)}
+                                            className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
+                                        >
+                                            Search
+                                        </button>
+                                    </form> */}
+                                    {/* <table className="text-sm border-collapse w-full">
+                                        <thead className="bg-gray-100">
+                                            <tr>
+                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
+                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
+                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
+                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Academic year</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {alumni.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={3} className="text-center py-4 text-gray-400">
+                                                        No members found.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                alumni.map((alum, idx) => (
+                                                    <tr key={alum.id || idx}>
+                                                        <td className="px-6 py-2">{alum.member_id}</td>
+                                                        <td className="px-6 py-2">{alum.first_name + " " + alum.last_name}</td>
+                                                        <td className="px-6 py-2">{alum.semester}</td>
+                                                        <td className="px-6 py-2">{alum.academic_year}</td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table> */}
+                                </div>
+                            </div>
 
                         )
                         }

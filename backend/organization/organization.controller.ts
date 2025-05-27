@@ -449,19 +449,21 @@ const getTotalFees = async (
     try {
         let query = `SELECT 
     SUM(CASE WHEN f.date_paid IS NULL THEN f.fee_amount ELSE 0 END) AS total_unpaid_fees,
-    SUM(CASE WHEN f.date_paid IS NOT NULL THEN f.fee_amount ELSE 0 END) AS total_paid_fees,
-    ? AS as_of_date
+    SUM(CASE WHEN f.date_paid IS NOT NULL THEN f.fee_amount ELSE 0 END) AS total_paid_fees
 FROM fee AS f
 JOIN organization AS o
 ON f.organization_id = o.organization_id
-WHERE o.organization_id = ?
-  AND f.due_date <= ?`;
+WHERE o.organization_id = ? `;
 
         const params: (string | number)[] = [];
 
-        if (req.query.id && typeof req.query.id == 'string' && req.query.date && typeof req.query.date == 'string') {
-            params.push(req.query.date);
+        if (req.query.id && typeof req.query.id == 'string') {
             params.push(req.query.id);
+
+        }
+
+        if (req.query.date && typeof req.query.date == 'string') {
+            query += ` AND f.due_date <= ?`;
             params.push(req.query.date);
         }
 
@@ -469,7 +471,8 @@ WHERE o.organization_id = ?
 
         const conn = await pool.getConnection();
         try {
-            const payments = await conn.query(query, params);
+            const paymentsQuery = await conn.query(query, params);
+            const payments = paymentsQuery[0];
             res.json({ payments });
         } catch (err) {
             console.error(err);
