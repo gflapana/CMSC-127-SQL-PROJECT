@@ -1,5 +1,5 @@
 import express from "express";
-import { addEvent, addFee, deleteEvent, deleteMember, editDetails, findEligibleMember, getAlumni, getExecutiveMembers, getHighestDebtor, getLatePayments, getMembers, getMembersByRole, getPercentage, getTotalFees, getUnpaidMembers } from "./organization.controller";
+import { addEvent, addFee, addMemberToOrganization, deleteEvent, deleteMember, editDetails, findEligibleMember, getAlumni, getExecutiveMembers, getHighestDebtor, getLatePayments, getMembers, getMembersByRole, getPercentage, getTotalFees, getUnpaidMembers, updateMemberToOrganization } from "./organization.controller";
 
 const organizationRouter = express.Router();
 
@@ -18,5 +18,7 @@ organizationRouter.post("/deleteMember", deleteMember);
 organizationRouter.post("/addEvent", addEvent);
 organizationRouter.post("/deleteEvent", deleteEvent);
 organizationRouter.post("/addFee", addFee);
+organizationRouter.post("/addMemberToOrganization", addMemberToOrganization);
+organizationRouter.post("/updateMemberToOrganization", updateMemberToOrganization);
 
 export default organizationRouter;
