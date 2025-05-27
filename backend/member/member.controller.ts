@@ -36,4 +36,35 @@ const editDetails = async (
     }
 };
 
-export { editDetails };
+const getOrganizations = async(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "SELECT organization_id, organization_name, organization_type, date_established, years_active from organization where organization_id = ?";
+    let params: string[] = [];
+    if (req.query.id && typeof req.query.id == 'string'){
+        params.push(req.query.id);
+    }
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            const organizations = await conn.query(query, params);
+            // await conn.commit();
+            res.json({ organizations });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export { editDetails, getOrganizations };
