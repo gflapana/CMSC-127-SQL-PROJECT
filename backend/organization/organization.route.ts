@@ -18,6 +18,6 @@ organizationRouter.post("/deleteMember", deleteMember);
 organizationRouter.post("/addEvent", addEvent);
 organizationRouter.post("/deleteEvent", deleteEvent);
 organizationRouter.post("/addFee", addFee);
-organizationRouter.post("addMemberToOrganization", addMemberToOrganization);
+organizationRouter.post("/addMemberToOrganization", addMemberToOrganization);
 
 export default organizationRouter;
