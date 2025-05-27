@@ -80,26 +80,26 @@ const UserHome = () => {
                         </thead>
                         <tbody>
                             {myOrgs.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={11} className="text-center py-4 text-gray-400">
-                                            No members found.
-                                        </td>
+                                <tr>
+                                    <td colSpan={11} className="text-center py-4 text-gray-400">
+                                        No members found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                myOrgs.map((member, idx) => (
+                                    <tr key={member.id || idx}>
+                                        <td className="px-3 py-2">{member.organization_name}</td>
+                                        <td className="px-3 py-2">{member.organization_type}</td>
+                                        <td className="px-3 py-2">{member.date_established}</td>
+                                        <td className="px-3 py-2">{member.year_joined}</td>
+                                        <td className="px-3 py-2">{member.committee}</td>
+                                        <td className="px-3 py-2">{member.committee_role}</td>
+                                        <td className="px-3 py-2">{member.member_status}</td>
+                                        <td className="px-3 py-2">{member.semester}</td>
+                                        <td className="px-3 py-2">{member.academic_year}</td>
                                     </tr>
-                                ) : (
-                                    myOrgs.map((member, idx) => (
-                                        <tr key={member.id || idx}>
-                                            <td className="px-3 py-2">{member.organization_name}</td>
-                                            <td className="px-3 py-2">{member.organization_type}</td>
-                                            <td className="px-3 py-2">{member.date_established}</td>
-                                            <td className="px-3 py-2">{member.year_joined}</td>
-                                            <td className="px-3 py-2">{member.committee}</td>
-                                            <td className="px-3 py-2">{member.committee_role}</td>
-                                            <td className="px-3 py-2">{member.member_status}</td>
-                                            <td className="px-3 py-2">{member.semester}</td>
-                                            <td className="px-3 py-2">{member.academic_year}</td>
-                                        </tr>
-                                    ))
-                                )}
+                                ))
+                            )}
                         </tbody>
                     </table>
                     <div>
