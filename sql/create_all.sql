@@ -43,13 +43,13 @@ VALUES
 (5, "Internals Quiz Bee");
 
 -- Insert into Organization Member Table
-INSERT INTO organization_has_member(organization_id, member_id, committee, committee_role, member_status, academic_year, semester)
+INSERT INTO organization_has_member(organization_id, member_id,year_joined, committee, committee_role, member_status, academic_year, semester)
 VALUES
-(1, 1, "Visuals and Logistics", "Member", "Active", "2024-2025", "2nd Semester"),
-(2, 2, "Executive", "Service Head", "Active", "2024-2025", "2nd Semester"),
-(1, 3, "Projects and Activities", "Member", "Active", "2024-2025", "2nd Semester"),
-(3, 3, "Education", "Member", "Active", "2024-2025", "2nd Semester"),
-(4, 5, NULL, NULL, "Inactive", "2024-2025", "2nd Semester"),
-(5, 4, "Executive", "Logistics Head", "Active", "2024-2025", "2nd Semester"),
-(1, 2, "Executive", "Logistics Head", "Active", "2023-2024", "1st Semester"),
-(1, 4, "Executive", "Logistics Head", "Inactive", "2024-2025", "2nd Semester");
+(1, 1, 2023,"Visuals and Logistics", "Member", "Active", "2024-2025", "2nd Semester"),
+(2, 2, 2023,"Executive", "Service Head", "Active", "2024-2025", "2nd Semester"),
+(1, 3, 2024,"Projects and Activities", "Member", "Active", "2024-2025", "2nd Semester"),
+(3, 3, 2024,"Education", "Member", "Active", "2024-2025", "2nd Semester"),
+(4, 5, 2024,NULL, NULL, "Inactive", "2024-2025", "2nd Semester"),
+(5, 4, 2025,"Executive", "Logistics Head", "Active", "2024-2025", "2nd Semester"),
+(1, 2, 2022,"Executive", "Logistics Head", "Active", "2023-2024", "1st Semester"),
+(1, 4, 2023,"Executive", "Logistics Head", "Inactive", "2024-2025", "2nd Semester");

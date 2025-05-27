@@ -62,9 +62,10 @@ CREATE TABLE organization_event(
 CREATE TABLE organization_has_member(
     organization_id INT(3) NOT NULL,
     member_id INT(4) NOT NULL,
+    year_joined INT(4) NOT NULL,
     committee VARCHAR(30),
     committee_role VARCHAR(30),
-    member_status VARCHAR(30),
+    member_status VARCHAR(30) NOT NULL,
     academic_year VARCHAR(9) NOT NULL,
     semester VARCHAR(12) NOT NULL,
 

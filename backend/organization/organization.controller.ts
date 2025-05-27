@@ -2,21 +2,20 @@ import pool from "../config/connectDB"
 import express from "express";
 
 
-// Queries: id (NOT required, you might need it :D ), sex, degree_program, committee, role (committee_role), academic_year, order (order by), desc (true if desc)
+// Queries: id (NOT required, you might need it :D ), sex, degree_program, year_joined, committee, committee_role, member_status, academic_year, semester, order (order by), desc (true if desc)
 const getMembers = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, batch, degree_program, committee, committee_role, academic_year from member natural join organization_has_member";
+        let query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, batch, degree_program, year_joined, member_status, committee, committee_role, academic_year, semester from member natural join organization_has_member";
         const conditions: string[] = [];
         const params: (string | number)[] = [];
         let order: string | null = null;
-        let group: string | null = null;
 
         if (req.query.id && typeof req.query.id == 'string') {
-            conditions.push('organization_id = ?');
+            conditions.push('organization_id =  ?');
             params.push(req.query.id);
         }
 
@@ -33,27 +32,36 @@ const getMembers = async (
             conditions.push('committee = ?');
             params.push(req.query.committee);
         }
-        if (req.query.role && typeof req.query.role == 'string') {
+
+        if (req.query.year_joined && typeof req.query.year_joined == 'string'){
+            conditions.push('year_joined = ?');
+            params.push(req.query.year_joined);
+        }
+
+        if (req.query.member_status && typeof req.query.member_status == 'string'){
+            conditions.push('member_status = ?');
+            params.push(req.query.member_status);
+        }
+
+        if (req.query.committee_role && typeof req.query.committee_role == 'string') {
             conditions.push('committee_role = ?');
-            params.push(req.query.role);
+            params.push(req.query.committee_role);
         }
         if (req.query.academic_year && typeof req.query.academic_year == 'string') {
-            group = " GROUP BY member_id HAVING min(academic_year) = ?";
+            conditions.push('academic_year = ?');
             params.push(req.query.academic_year);
         }
         if (req.query.order && typeof req.query.order == 'string') {
             order = ` ORDER BY ${req.query.order}`;
         }
-        if (req.query.desc) {
+
+        if (req.query.desc && req.query.desc == 'true') {
             order += " DESC";
         }
-        if (conditions) {
+        if (conditions.length != 0) {
             query += " WHERE " + conditions.join(' AND ');
         }
 
-        if (group) {
-            query += group;
-        }
 
         if (order) {
             query += order;
@@ -142,7 +150,7 @@ const getExecutiveMembers = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT distinct member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, committee, committee_role, academic_year from member natural join organization_has_member natural join organization WHERE organization_id = ? AND committee='Executive' AND academic_year = ?";
+        let query = "SELECT distinct member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, year_joined, batch, member_status, committee, committee_role, academic_year from member natural join organization_has_member natural join organization WHERE organization_id = ? AND committee='Executive' AND academic_year = ?";
         const params: (string | number)[] = [];
         let order: string | null = null;
 
@@ -187,7 +195,7 @@ const getMembersByRole = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT member.member_id,first_name, IFNULL(middle_name,'') middle_name, sex ,degree_program ,batch, committee, academic_year , semester, committee_role FROM organization_has_member JOIN member ON organization_has_member.member_id=member.member_id WHERE committee_role=? AND organization_id=? ORDER BY CONCAT(academic_year,semester) desc";
+        let query = "SELECT member.member_id,first_name, IFNULL(middle_name,'') middle_name, sex ,degree_program ,batch, committee, committee_role,     status, academic_year , semester, committee_role FROM organization_has_member JOIN member ON organization_has_member.member_id=member.member_id WHERE committee_role=? AND organization_id=? ORDER BY CONCAT(academic_year,semester) desc";
         const params: (string | number)[] = [];
 
         if (req.query.committee_role && typeof req.query.committee_role == 'string') {
@@ -643,7 +651,7 @@ const addFee = async (
     let query = "INSERT INTO fee(fee_amount, due_date, date_paid, payment_status, semester, academic_year, organization_id, member_id) VALUES (?,?,?,?,?,?,?,?)";
 
     let params: (string | number | null)[] = [];
-    
+
     params.push(req.body.fee_amount);
     params.push(req.body.due_date);
     params.push(req.body.date_paid);
