@@ -632,7 +632,7 @@ const deleteFee = async (
     try {
         const conn = await pool.getConnection();
         try {
-            await conn.query(`DELETE FROM fee WHERE member_id=${req.body.member_id} AND organization_id = ${req.body.id} AND semester = ${req.body.semester} AND academic_year = ${req.body.academic_year}`);
+            await conn.query(`DELETE FROM fee WHERE fee_id=${req.body.fee_id}`);
             res.json({ status: "success" });
         } catch (err) {
             console.error(err);

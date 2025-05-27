@@ -23,12 +23,12 @@ import UpdateFee from "./pages/org-fees/UpdateFee";
 
 function App() {
   const routes = [
+    // {
+    //   path: "/",
+    //   element: <h1>Welcome to the CMSC 127 SQL Project</h1>
+    // },
     {
       path: "/",
-      element: <h1>Welcome to the CMSC 127 SQL Project</h1>
-    },
-    {
-      path: "/log-in",
       element: <LogIn />
     },
     {

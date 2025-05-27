@@ -1,9 +1,7 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
 
 const AddFee = () => {
     const { auth } = useAuth();
@@ -31,7 +29,7 @@ const AddFee = () => {
             }
         };
         getAllEligibleMembers();
-    }, [eligibleMembers])
+    }, [eligibleMembers, id])
 
     const handleChange = (e) => {
         setFeeData({
@@ -99,7 +97,7 @@ const AddFee = () => {
                                 name="due_date"
                                 value={feeData.due_date}
                                 onChange={handleChange}
-                                placeholder="Due Date (YYYY/MM/DD)"
+                                placeholder="Due Date (YYYY-MM-DD)"
                                 className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                             />
                             <input
@@ -107,7 +105,7 @@ const AddFee = () => {
                                 name="date_paid"
                                 value={feeData.date_paid}
                                 onChange={handleChange}
-                                placeholder="Date Paid"
+                                placeholder="Date Paid (YYYY-MM-DD)"
                                 className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                             />
 
@@ -125,7 +123,7 @@ const AddFee = () => {
                                     name="semester"
                                     value={feeData.semester}
                                     onChange={handleChange}
-                                    placeholder="Semester"
+                                    placeholder="1st/2nd Semester"
                                     className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                                 />
 
