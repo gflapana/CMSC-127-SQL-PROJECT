@@ -23,6 +23,9 @@ const OrgFees = () => {
     const [semester, setSemester] = useState("");
     const [dateQuery, setDateQuery] = useState("");
     const [dateInput, setDateInput] = useState("");
+    const [semesterDebt, setSemesterDebt] = useState("");
+    const [acadYearDebtInput, setAcadYearDebtInput] = useState("");
+    const [acadYearDebtQuery, setAcadYearDebtQuery] = useState("");
 
     useEffect(() => {
         const getMemFees = async () => {
@@ -48,7 +51,7 @@ const OrgFees = () => {
                     `organization/getTotalFees/?id=${id}&date=${dateQuery}`
                 );
                 console.log("Total Fees Response:", getAllFees.data);
-                console.log("Total Fees Response: payments", getAllFees.data.payments);
+                console.log("Total Fees Response: payments", getAllFees.data.payments.total_paid_fees);
                 setTotalFees(getAllFees.data.payments);
             } catch (error) {
                 console.error("Error fetching total fees:", error);
@@ -65,11 +68,21 @@ const OrgFees = () => {
         setSemester(e.target.value);
     };
 
+    const handleSemChangeDebt = (e) => {
+        setSemesterDebt(e.target.value);
+    }
+
     const handleAcadYearSubmit = (e) => {
         e.preventDefault();
         setAcadYearQuery(acadYearInput);
         // You can also trigger a fetch or filter here if needed
     };
+
+    const handleAcadYearSubmitDebt = (e) => {
+        e.preventDefault();
+        setAcadYearDebtQuery(acadYearDebtInput);
+
+    }
 
     const handleTableChange = (e) => {
         setTableView(e.target.value);
@@ -287,8 +300,12 @@ const OrgFees = () => {
                                         </button>
                                     </form>
                                     <p className="text-gray-700 mb-2">
-                                        {/* {totalFees.total_paid_fees} */}
+                                        Total Paid Fees: ₱{totalFees.total_paid_fees}
                                     </p>
+                                    <p className="text-gray-700 mb-2">
+                                        Total Unpaid Fees: ₱{totalFees.total_unpaid_fees}
+                                    </p>
+
                                     {/* Search bar for "How many semesters from now?" without form and submit button */}
                                     {/* <input
                                         type="number"
@@ -307,7 +324,36 @@ const OrgFees = () => {
                                     </p> */}
                                 </div>
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
-                                    {/* Date search bar */}
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Members with highest debt</h2>
+                                    <div className="flex flex-row items-center gap-2 w-full md:w-auto">
+                                        <div className="relative flex flex-row items-center gap-2 w-full">
+                                            <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                            <select
+                                                onChange={handleSemChangeDebt}
+                                                className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+                                                defaultValue=""
+                                            >
+                                                <option value="">All semester</option>
+                                                <option value="1st Semester">1st semester</option>
+                                                <option value="2nd Semester">2nd semester</option>
+                                            </select>
+                                            <form onSubmit={handleAcadYearSubmitDebt} className="flex flex-row w-full md:w-auto">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search A.Y."
+                                                    value={acadYearInput}
+                                                    onChange={(e) => setAcadYearDebtInput(e.target.value)}
+                                                    className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-40 rounded-l"
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
+                                                >
+                                                    Search
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                     {/* <form
                                         onSubmit={e => {
                                             e.preventDefault();
