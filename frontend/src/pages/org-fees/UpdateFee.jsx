@@ -37,14 +37,14 @@ const UpdateFee = () => {
             }
         };
         getMemFees();
-    }, [members, id])
+    }, [id])
 
     const handleEditClick = (member) => {
         setSelectedMember(member);
         setFeeData({
             fee_amount: member.fee_amount || 0,
-            due_date: member.due_date || "",
-            date_paid: member.date_paid || null,
+            due_date: (member.due_date) ? member.due_date.substring(0,10) : "",
+            date_paid: (member.date_paid) ? member.date_paid.substring(0,10): "",
             semester: member.semester || "",
             academic_year: member.academic_year || "",
             id: member.organization_id,
