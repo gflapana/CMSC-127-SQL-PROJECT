@@ -33,12 +33,12 @@ const getMembers = async (
             params.push(req.query.committee);
         }
 
-        if (req.query.year_joined && typeof req.query.year_joined == 'string'){
+        if (req.query.year_joined && typeof req.query.year_joined == 'string') {
             conditions.push('year_joined = ?');
             params.push(req.query.year_joined);
         }
 
-        if (req.query.member_status && typeof req.query.member_status == 'string'){
+        if (req.query.member_status && typeof req.query.member_status == 'string') {
             conditions.push('member_status = ?');
             params.push(req.query.member_status);
         }
@@ -86,6 +86,31 @@ const getMembers = async (
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+const findEligibleMember = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        const query = "SELECT first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member";
+        const conn = await pool.getConnection();
+        try {
+            const members = await conn.query(query);
+            // console.log(members);
+            res.json({ members });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: `Internal Server Error: ${err}` });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
 
 // queries: id (required), academic_year (required), semester(required), order, desc
@@ -680,4 +705,4 @@ const addFee = async (
     }
 };
 
-export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee };
+export { getMembers, findEligibleMember ,getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee };
