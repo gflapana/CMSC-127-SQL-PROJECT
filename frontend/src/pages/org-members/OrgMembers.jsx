@@ -17,6 +17,13 @@ const OrgMembers = () => {
     const org = auth?.user;
     const id = org.organization_id;
 
+
+    useEffect(() => {
+        setSortOrder("asc");      
+        setSearchQuery("");       
+        setSearchInput("");       
+    }, [selectedFilter]);
+
     useEffect(() => {
         const getAllMembersFiltered = async () => {
             try {
