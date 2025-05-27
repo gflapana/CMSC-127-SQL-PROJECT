@@ -10,7 +10,7 @@ const UserNavBar = () => {
     const handleSignOut = () => {
         setAuth({});
         localStorage.removeItem("auth");
-        navigate("/log-in", { replace: true });
+        navigate("/", { replace: true });
     };
     return (
         <nav className="bg-blue-600 text-white px-4 py-3 flex items-center justify-end shadow-md">

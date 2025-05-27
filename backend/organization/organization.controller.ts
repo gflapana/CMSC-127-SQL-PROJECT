@@ -38,7 +38,7 @@ const getMembers = async (
 
 
         if (req.query.member_status && typeof req.query.member_status == 'string') {
-            conditions.push(`member_status like '%${req.query.member_status}%'`);
+            conditions.push(`member_status = '${req.query.member_status}'`);
         }
 
         if (req.query.committee_role && typeof req.query.committee_role == 'string') {
@@ -319,7 +319,7 @@ const getPercentage = async (
     ) / (SELECT COUNT(*) 
      FROM organization_has_member AS ohm 
      JOIN organization AS o ON ohm.organization_id = o.organization_id 
-     WHERE o.organization_id = ${parseInt(req.query.id)} 
+     WHERE o.organization_id = ${parseInt(req.query.id)} AND (ohm.member_status = "Active" OR ohm.member_status = "Inactive")
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
@@ -334,7 +334,7 @@ const getPercentage = async (
      FROM organization_has_member AS ohm 
      JOIN organization AS o ON ohm.organization_id = o.organization_id 
      WHERE ohm.member_status = 'Inactive' 
-       AND o.organization_id = ${parseInt(req.query.id)} 
+       AND o.organization_id = ${parseInt(req.query.id)}
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
@@ -346,7 +346,7 @@ const getPercentage = async (
     ) / (SELECT COUNT(*) 
      FROM organization_has_member AS ohm 
      JOIN organization AS o ON ohm.organization_id = o.organization_id 
-     WHERE o.organization_id = ${parseInt(req.query.id)} 
+     WHERE o.organization_id = ${parseInt(req.query.id)} AND (ohm.member_status = "Active" OR ohm.member_status = "Inactive")
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
@@ -360,7 +360,7 @@ const getPercentage = async (
     (SELECT COUNT(*) 
      FROM organization_has_member AS ohm 
      JOIN organization AS o ON ohm.organization_id = o.organization_id 
-     WHERE o.organization_id = ${parseInt(req.query.id)} 
+     WHERE o.organization_id = ${parseInt(req.query.id)} AND (ohm.member_status = "Active" OR ohm.member_status = "Inactive") 
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 

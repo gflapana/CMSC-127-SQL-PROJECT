@@ -131,9 +131,12 @@ const OrgMembers = () => {
                                 <option value="statusreport">Status Report</option>
                             </select>
                         </div>
-                        {/* Only show sort dropdown in viewall */}
+
                         {tableView === "viewall" && (
                             <div className="flex items-center gap-2">
+                                <p>
+                                    Sort By:
+                                </p>
                                 <div className="relative w-full md:w-auto max-w-xs">
                                     <ChartBar className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                     <select

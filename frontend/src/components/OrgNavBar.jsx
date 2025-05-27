@@ -53,7 +53,7 @@ const OrgNavBar = () => {
     const handleSignOut = () => {
         setAuth({});
         localStorage.removeItem("auth");
-        navigate("/log-in", { replace: true });
+        navigate("/", { replace: true });
     };
 
     return (
