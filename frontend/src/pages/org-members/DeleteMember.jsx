@@ -24,15 +24,15 @@ const DeleteMember = () => {
             }
         };
         getAllEligibleMembers();
-    }, [eligibleMembers])
+    }, [id])
 
     const handleChange = (e) => {
         setMemberId(e.target.value)
     };
 
     const deleteMember = async () => {
-        memberData.id = id;
-        await api.post(`/organization/deleteMember`, memberId)
+        console.log(memberId);
+        await api.post(`/organization/deleteMember`, { member_id: memberId })
     }
 
     return (
@@ -51,11 +51,11 @@ const DeleteMember = () => {
                     <div className="m-10">
 
                     </div>
-                    <form onSubmit={DeleteMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                    <form onSubmit={deleteMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         <div className="grid grid-cols-1 gap-4 pt-5">
 
                             <input
-                                type="text"
+                                type="number"
                                 name="member_id"
                                 value={memberId}
                                 onChange={handleChange}
