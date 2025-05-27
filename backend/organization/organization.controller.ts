@@ -420,6 +420,10 @@ WHERE ohm.member_status = 'alumni'
         if (req.query.date && typeof req.query.date == 'string') {
             params.push(req.query.date);
             params.push(req.query.date);
+            params.push(req.query.date);
+            params.push(req.query.date);
+            params.push(req.query.date);
+            
         }
         const conn = await pool.getConnection();
         try {
