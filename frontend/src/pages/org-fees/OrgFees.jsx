@@ -1,4 +1,4 @@
-import React from "react";
+import React, { use } from "react";
 import { useState, useEffect } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
@@ -27,6 +27,12 @@ const OrgFees = () => {
     const [semesterDebt, setSemesterDebt] = useState("");
     const [acadYearDebtInput, setAcadYearDebtInput] = useState("");
     const [acadYearDebtQuery, setAcadYearDebtQuery] = useState("");
+
+    useEffect(() => {
+        setAcadYearQuery("");
+        setSemester("");
+        setSelectedFilter("");
+    }, [tableView])
 
     useEffect(() => {
         const getMemFees = async () => {
@@ -60,7 +66,7 @@ const OrgFees = () => {
         }
 
         getOrgFees();
-    }, [id, dateQuery]);
+    }, [id, dateQuery, tableView]);
 
     useEffect(() => {
         const getDebtMembers = async () => {
@@ -166,7 +172,7 @@ const OrgFees = () => {
                                     <select
                                         onChange={handleSemChange}
                                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="1st Semester"
+                                        defaultValue=""
                                     >
                                         <option value="">All semester</option>
                                         <option value="1st Semester">1st semester</option>
