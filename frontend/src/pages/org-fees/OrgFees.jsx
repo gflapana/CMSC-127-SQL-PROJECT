@@ -26,16 +26,17 @@ const OrgFees = () => {
         const getMemFees = async () => {
             try {
                 const allMemFees = await api.get(
-                    `organization/getFees/?id=${id}&academic_year=${acadYearQuery}&semester=${semester}`
+                    `organization/getFees/?id=${id}&academic_year=${acadYearQuery}&semester=${semester}&payment_status=${selectedFilter}`
                 )
                 setMembers(Array.isArray(allMemFees.data.fees) ? allMemFees.data.fees : []);
+                console.log("semester:", semester);
                 console.log("Fetched Members:", allMemFees.data.fees);
             } catch (error) {
                 console.error("Error fetching members:", error);
             }
         };
         getMemFees();
-    }, [id, acadYearQuery, semester])
+    }, [id, acadYearQuery, semester, selectedFilter])
 
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
 
