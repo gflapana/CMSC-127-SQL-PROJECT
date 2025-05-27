@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown, Edit2 } from 'lucide-react';
+import { Edit2 } from 'lucide-react';
 
 const EditMember = () => {
     const { auth } = useAuth();
@@ -48,8 +48,10 @@ const EditMember = () => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setMemberData((prev) => ({ ...prev, [name]: value }));
+        setMemberData({
+            ...memberData,
+            [e.target.name]: e.target.value
+        });
     };
 
     const handleUpdateMember = async (e) => {
