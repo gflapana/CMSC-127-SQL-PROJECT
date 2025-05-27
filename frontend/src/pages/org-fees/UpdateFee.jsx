@@ -10,89 +10,40 @@ const UpdateFee = () => {
 
     const org = auth?.user;
     const id = org.organization_id;
-    console.log("Fees Organization ID:", id);
 
     const [members, setMembers] = useState([]);
     const [selectedMember, setSelectedMember] = useState(null);
-    const [debtors, setDebtors] = useState([]);
-    const [tableView, setTableView] = useState("viewall");
-    const [selectedFilter, setSelectedFilter] = useState("");
-    const [totalFees, setTotalFees] = useState();;
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchInput, setSearchInput] = useState("");
-    const [acadYearInput, setAcadYearInput] = useState("");
-    const [acadYearQuery, setAcadYearQuery] = useState("");
-    const [semester, setSemester] = useState("");
-    const [dateQuery, setDateQuery] = useState("");
-    const [dateInput, setDateInput] = useState("");
-    const [semesterDebt, setSemesterDebt] = useState("");
-    const [acadYearDebtInput, setAcadYearDebtInput] = useState("");
-    const [acadYearDebtQuery, setAcadYearDebtQuery] = useState("");
-    const [memberData, setMemberData] = useState({
+    const [feeData, setFeeData] = useState({
         fee_amount: 0,
         due_date: "",
         date_paid: "",
         semester: "",
         academic_year: "",
-        id: null,
-        member_id: null,
+        id: "",
+        member_id: "",
     })
 
     useEffect(() => {
         const getMemFees = async () => {
             try {
                 const allMemFees = await api.get(
-                    `organization/getFees/?id=${id}&academic_year=${acadYearQuery}&semester=${semester}&payment_status=${selectedFilter}`
+                    `organization/getFees/?id=${id}`
                 )
                 setMembers(Array.isArray(allMemFees.data.fees) ? allMemFees.data.fees : []);
-                console.log("semester:", semester);
-                console.log("Fetched Members:", allMemFees.data.fees);
+
             } catch (error) {
                 console.error("Error fetching members:", error);
             }
         };
         getMemFees();
-    }, [id, acadYearQuery, semester, selectedFilter, tableView])
-
-    useEffect(() => {
-        const getOrgFees = async () => {
-            try {
-                console.log("Fetching total fees for organization ID:", id);
-                const getAllFees = await api.get(
-                    `organization/getTotalFees/?id=${id}&date=${dateQuery}`
-                );
-                console.log("Total Fees Response:", getAllFees.data);
-                console.log("Total Fees Response: payments", getAllFees.data.payments.total_paid_fees);
-                setTotalFees(getAllFees.data.payments);
-            } catch (error) {
-                console.error("Error fetching total fees:", error);
-            }
-        }
-
-        getOrgFees();
-    }, [id, dateQuery]);
-
-    useEffect(() => {
-        const getDebtMembers = async () => {
-            try {
-                const allDebtMemFees = await api.get(
-                    `organization/getHighestDebtor/?id=${id}&semester=${semesterDebt}&academic_year=${acadYearDebtQuery}`
-                )
-                setDebtors(Array.isArray(allDebtMemFees.data.debtor) ? allDebtMemFees.data.debtor : []);
-                console.log("Fetched Debt Members:", allDebtMemFees.data.debtor);
-            } catch (error) {
-                console.error("Error fetching debt members:", error);
-            }
-        };
-        getDebtMembers();
-    }, [semesterDebt, acadYearDebtQuery, id]);
+    }, [members])
 
     const handleEditClick = (member) => {
         setSelectedMember(member);
-        setMemberData({
+        setFeeData({
             fee_amount: member.fee_amount || 0,
             due_date: member.due_date || "",
-            date_paid: member.date_paid || "",
+            date_paid: member.date_paid || null,
             semester: member.semester || "",
             academic_year: member.academic_year || "",
             id: member.organization_id,
@@ -100,29 +51,53 @@ const UpdateFee = () => {
         });
     }
 
-    const handleSelectChange = (e) => setSelectedFilter(e.target.value);
 
-
-    const handleSemChange = (e) => {
-        setSemester(e.target.value);
+    const handleChange = (e) => {
+        setFeeData({
+            ...feeData,
+            [e.target.name]: e.target.value
+        });
     };
 
-    const handleSemChangeDebt = (e) => {
-        setSemesterDebt(e.target.value);
-    }
-
-    const handleAcadYearSubmit = (e) => {
+    const handleUpdateFee = async (e) => {
         e.preventDefault();
-        setAcadYearQuery(acadYearInput);
+        var finalFeeData = { ...feeData, id };
+        finalFeeData.date_paid = (finalFeeData.date_paid == '') ? null : finalFeeData.date_paid;
+        console.log(`Fee Data: ${finalFeeData}`);
+        try {
+            await api.put(`/organization/updateFee`, finalFeeData);
+            setMembers((prev) =>
+                prev.map((m) =>
+                    m.fee_id === feeData.fee_id ? { ...m, ...feeData } : m
+                )
+            );
+            setSelectedMember(null);
+            setFeeData({
+                fee_amount: 0,
+                due_date: "",
+                date_paid: "",
+                semester: "",
+                academic_year: "",
+                id: "",
+                member_id: "",
+
+            });
+        } catch (error) {
+            console.error("Error updating member:", error);
+        }
     };
 
-    const handleAcadYearSubmitDebt = (e) => {
-        e.preventDefault();
-        setAcadYearDebtQuery(acadYearDebtInput);
-    }
-
-    const handleTableChange = (e) => {
-        setTableView(e.target.value);
+    const handleCancel = () => {
+        setSelectedMember(null);
+        setFeeData({
+            fee_amount: 0,
+            due_date: "",
+            date_paid: "",
+            semester: "",
+            academic_year: "",
+            id: "",
+            member_id: "",
+        });
     };
 
     return (
@@ -136,234 +111,157 @@ const UpdateFee = () => {
                             Here you can view and manage your organization's fee.
                         </p>
                     </div>
+                    {selectedMember && (
+                        <form onSubmit={handleUpdateFee} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto mb-6">
+                            <h2 className="text-white text-xl font-semibold mb-4">Edit Fees</h2>
+                            <div className="grid grid-cols-1 gap-4">
 
-                    
 
-                    {/* Table View Selector and Sort */}
-                    <div className="flex flex-row justify-between gap-4 mb-6">
-                        <div className="relative">
-                            <ArrowDown className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                            <select
-                                onChange={handleTableChange}
-                                className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                value={tableView}
-                            >
-                                <option value="viewall">View All</option>
-                                <option value="statusreport">Status Report</option>
-                            </select>
-                        </div>
-
-                    </div>
-                    {tableView === "viewall" && (
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                            <div className="flex items-center gap-2 w-full md:w-auto">
-                                <div className="relative">
-                                    <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    <select
-                                        onChange={handleSelectChange}
-                                        className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue=""
-                                    >
-                                        <option value="">All Status</option>
-                                        <option value="Paid">Paid</option>
-                                        <option value="Unpaid">Unpaid</option>
-                                        <option value="Paid Late">Paid Late</option>
-                                    </select>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <input
+                                        type="number"
+                                        name="member_id"
+                                        value={feeData.member_id}
+                                        onChange={handleChange}
+                                        placeholder="Member ID"
+                                        className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                    />
+                                    <input
+                                        type="number"
+                                        name="fee_amount"
+                                        value={feeData.fee_amount}
+                                        onChange={handleChange}
+                                        placeholder="Fee Amount"
+                                        className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                    />
                                 </div>
-                            </div>
-                            <div className="flex items-center gap-2 w-full md:w-auto">
-                                <div className="relative">
-                                    <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    <select
-                                        onChange={handleSemChange}
-                                        className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="1st Semester"
-                                    >
-                                        <option value="">All semester</option>
-                                        <option value="1st Semester">1st semester</option>
-                                        <option value="2nd Semester">2nd semester</option>
-                                    </select>
-                                </div>
-                                <form onSubmit={handleAcadYearSubmit} className="flex w-full md:w-auto">
+                                <input
+                                    type="text"
+                                    name="due_date"
+                                    value={feeData.due_date}
+                                    onChange={handleChange}
+                                    placeholder="Due Date (YYYY/MM/DD)"
+                                    className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                />
+                                <input
+                                    type="text"
+                                    name="date_paid"
+                                    value={feeData.date_paid}
+                                    onChange={handleChange}
+                                    placeholder="Date Paid"
+                                    className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                />
+
+                                <div className="grid grid-cols-2 gap-4">
                                     <input
                                         type="text"
-                                        placeholder="Search A.Y."
-                                        value={acadYearInput}
-                                        onChange={(e) => setAcadYearInput(e.target.value)}
-                                        className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-40 rounded-l"
+                                        name="academic_year"
+                                        value={feeData.academic_year}
+                                        onChange={handleChange}
+                                        placeholder="A.Y"
+                                        className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                                     />
+                                    <input
+                                        type="text"
+                                        name="semester"
+                                        value={feeData.semester}
+                                        onChange={handleChange}
+                                        placeholder="Semester"
+                                        className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                    />
+
+                                </div>
+                                <div className="flex gap-4">
                                     <button
                                         type="submit"
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
+                                        className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-400 transition-colors duration-200"
                                     >
-                                        Search
+                                        Update Member
                                     </button>
-                                </form>
-
+                                    <button
+                                        type="button"
+                                        onClick={handleCancel}
+                                        className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-400 transition-colors duration-200"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                     )}
+
+
+
+
                     {/* Table */}
                     <div>
-                        {tableView === "viewall" ? (
-                            <table className="text-sm border-collapse mx-auto w-full">
-                                <thead className="bg-gray-100">
+
+                        <table className="text-sm border-collapse mx-auto w-full">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee ID</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Member ID</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee Amount</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Due Date</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Date Paid</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Payment Status</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">A.Y.</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {members.length === 0 ? (
                                     <tr>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee ID</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Member ID</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee Amount</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Due Date</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Date Paid</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Payment Status</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">A.Y.</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Edit</th>
+                                        <td colSpan={11} className="text-center py-4 text-gray-400">
+                                            No members found.
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {members.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={11} className="text-center py-4 text-gray-400">
-                                                No members found.
+                                ) : (
+                                    members.map((member, idx) => (
+                                        <tr key={member.id || idx}>
+                                            <td className="px-3 py-2">{member.fee_id}</td>
+                                            <td className="px-3 py-2">{member.member_id}</td>
+                                            <td className="px-3 py-2">{member.first_name + " " + member.last_name}</td>
+                                            <td className="px-3 py-2">{member.fee_amount}</td>
+                                            <td className="px-3 py-2">
+                                                {member.due_date
+                                                    ? new Date(member.due_date).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })
+                                                    : ""}
+                                            </td>
+                                            <td className="px-3 py-2">
+                                                {member.date_paid
+                                                    ? new Date(member.date_paid).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })
+                                                    : <span className="italic">null</span>
+                                                }
+                                            </td>
+                                            <td className="px-3 py-2">{member.payment_status}</td>
+                                            <td className="px-3 py-2">{member.semester}</td>
+                                            <td className="px-3 py-2">{member.academic_year}</td>
+                                            <td className="px-3 py-2">
+                                                <button
+                                                    onClick={() => handleEditClick(member)}
+                                                    className="text-blue-500 hover:text-blue-700"
+                                                    aria-label={`Edit member ${member.first_name} ${member.last_name}`}
+                                                >
+                                                    <Edit2 className="w-5 h-5" />
+                                                </button>
                                             </td>
                                         </tr>
-                                    ) : (
-                                        members.map((member, idx) => (
-                                            <tr key={member.id || idx}>
-                                                <td className="px-3 py-2">{member.fee_id}</td>
-                                                <td className="px-3 py-2">{member.member_id}</td>
-                                                <td className="px-3 py-2">{member.first_name + " " + member.last_name}</td>
-                                                <td className="px-3 py-2">{member.fee_amount}</td>
-                                                <td className="px-3 py-2">
-                                                    {member.due_date
-                                                        ? new Date(member.due_date).toLocaleDateString('en-US', {
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric'
-                                                        })
-                                                        : ""}
-                                                </td>
-                                                <td className="px-3 py-2">
-                                                    {member.date_paid
-                                                        ? new Date(member.date_paid).toLocaleDateString('en-US', {
-                                                            year: 'numeric',
-                                                            month: 'long',
-                                                            day: 'numeric'
-                                                        })
-                                                        : <span className="italic">null</span>
-                                                    }
-                                                </td>
-                                                <td className="px-3 py-2">{member.payment_status}</td>
-                                                <td className="px-3 py-2">{member.semester}</td>
-                                                <td className="px-3 py-2">{member.academic_year}</td>
-                                                <td className="px-3 py-2">
-                                                    <button
-                                                        onClick={() => handleEditClick(member)}
-                                                        className="text-blue-500 hover:text-blue-700"
-                                                        aria-label={`Edit member ${member.first_name} ${member.last_name}`}
-                                                    >
-                                                        <Edit2 className="w-5 h-5" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div className="flex gap-6">
-                                <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
-                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Paid and Unpaid Fees</h2>
-                                    <form
-                                        onSubmit={e => {
-                                            e.preventDefault();
-                                            setDateQuery(dateInput);
-                                        }}
-                                        className="flex mb-4"
-                                    >
-                                        <input
-                                            type="text"
-                                            placeholder="YYYY-MM-DD"
-                                            value={dateInput}
-                                            onChange={e => setDateInput(e.target.value)}
-                                            className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
-                                        >
-                                            Search
-                                        </button>
-                                    </form>
-                                    <p className="text-gray-700 mb-2">
-                                        Total Paid Fees: ₱{totalFees?.total_paid_fees != null ? totalFees.total_paid_fees : 0}
-                                    </p>
-                                    <p className="text-gray-700 mb-2">
-                                        Total Unpaid Fees: ₱{totalFees?.total_unpaid_fees != null ? totalFees.total_unpaid_fees : 0}
-                                    </p>
-                                </div>
-                                <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
-                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Members with highest debt</h2>
-                                    <div className="flex flex-row items-center gap-2 w-full md:w-auto">
-                                        <div className="relative flex flex-row items-center gap-2 w-full">
-                                            <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                            <select
-                                                onChange={handleSemChangeDebt}
-                                                className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                                defaultValue="1st Semester"
-                                            >
-                                                <option value="1st Semester">1st semester</option>
-                                                <option value="2nd Semester">2nd semester</option>
-                                            </select>
-                                            <form onSubmit={handleAcadYearSubmitDebt} className="flex flex-row w-full md:w-auto">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Search A.Y."
-                                                    value={acadYearDebtInput}
-                                                    onChange={(e) => setAcadYearDebtInput(e.target.value)}
-                                                    className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-40 rounded-l"
-                                                />
-                                                <button
-                                                    type="submit"
-                                                    className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
-                                                >
-                                                    Search
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <table className="text-sm border-collapse w-full">
-                                        <thead className="bg-gray-100">
-                                            <tr>
-                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">User ID</th>
-                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
-                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Total Debt</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {debtors.length === 0 ? (
-                                                <tr>
-                                                    <td colSpan={3} className="text-center py-4 text-gray-400">
-                                                        No members found.
-                                                    </td>
-                                                </tr>
-                                            ) : (
-                                                debtors.map((debtor, idx) => (
-                                                    <tr key={debtor.id || idx}>
-                                                        <td className="px-6 py-2">{debtor.member_id}</td>
-                                                        <td className="px-6 py-2">{debtor.first_name + " " + debtor.last_name}</td>
-                                                        <td className="px-6 py-2">{debtor.total_debt}</td>
-                                                    </tr>
-                                                ))
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
 
-                        )
-                        }
                     </div>
                 </div>
             </div>
