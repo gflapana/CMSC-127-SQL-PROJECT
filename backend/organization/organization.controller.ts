@@ -95,10 +95,11 @@ const findEligibleMember = async (
     next: express.NextFunction
 ) => {
     try {
-        const query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member";
+        const query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) from member m";
+        const params = [req.query.id];
         const conn = await pool.getConnection();
         try {
-            const members = await conn.query(query);
+            const members = await conn.query(query,params);
             // console.log(members);
             res.json({ members });
         } catch (err) {
@@ -310,9 +311,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) / (SELECT COUNT(*) 
@@ -322,9 +323,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)}
     ) AS active_count_percentage, 
@@ -337,9 +338,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) / (SELECT COUNT(*) 
@@ -349,9 +350,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year,4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year,4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) AS inactive_count_percentage,
@@ -363,9 +364,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) AS total_members`;
