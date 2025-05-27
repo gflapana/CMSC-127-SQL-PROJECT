@@ -701,7 +701,15 @@ const addFee = async (
     params.push(req.body.fee_amount);
     params.push(req.body.due_date);
     params.push(req.body.date_paid);
-    params.push(req.body.payment_status);
+    
+    if (!req.body.date_paid){
+        params.push("Unpaid");
+    } else if (new Date(req.body.date_paid) > new Date(req.body.due_date)){
+        params.push("Paid Late");
+    } else {
+        params.push("Paid");
+    }
+
     params.push(req.body.semester);
     params.push(req.body.academic_year);
     params.push(req.body.id);
