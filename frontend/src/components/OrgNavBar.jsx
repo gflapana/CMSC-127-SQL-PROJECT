@@ -8,7 +8,7 @@ const OrgNavBar = () => {
     const navigate = useNavigate();
     const { auth, setAuth } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
-    
+
     const handleSelect = (action) => {
         setIsOpen(false); // Close dropdown
         switch (action) {
