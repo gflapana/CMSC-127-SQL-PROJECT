@@ -93,7 +93,7 @@ const findEligibleMember = async (
     next: express.NextFunction
 ) => {
     try {
-        const query = "SELECT first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member";
+        const query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member";
         const conn = await pool.getConnection();
         try {
             const members = await conn.query(query);
