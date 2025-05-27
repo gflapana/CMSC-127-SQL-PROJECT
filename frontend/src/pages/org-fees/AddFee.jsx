@@ -8,14 +8,13 @@ import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
 const AddFee = () => {
     const { auth } = useAuth();
     const [eligibleMembers, setEligibleMembers] = useState([]);
-    const [isHidden, setIsHidden] = useState(true);
-    const [FeeData, setFeeData] = useState({
+    const [feeData, setFeeData] = useState({
         fee_amount: "",
         due_date: "",
         date_paid: "",
         member_id: '',
         academic_year: '',
-        Fee: ''
+        semester: ''
     });
 
     const org = auth?.user;
@@ -35,23 +34,23 @@ const AddFee = () => {
     }, [eligibleMembers])
 
     const handleChange = (e) => {
-        setFeerData({
+        setFeeData({
             ...feeData,
             [e.target.name]: e.target.value
         });
     };
 
-    const addMember = async () => {
-        const finalFeeData = { ...Data, id };
+    const addFee = async () => {
+
+        var finalFeeData = { ...feeData, id };
+        finalFeeData.date_paid = (finalFeeData.date_paid == '') ? null : finalFeeData.date_paid;
         console.log(`Member Data: ${finalFeeData}`);
-        await api.post(`/organization/addMemberToOrganization`, finalFeeData)
+        await api.post(`/organization/addFee`, finalFeeData)
         setMemberData({
-            id: "",
-            member_id: "",
-            year_joined: "",
-            committee: '',
-            committee_role: '',
-            member_status: '',
+            fee_amount: "",
+            due_date: "",
+            date_paid: "",
+            member_id: '',
             academic_year: '',
             semester: ''
         });
@@ -66,88 +65,78 @@ const AddFee = () => {
                     < div className="mb-6" >
                         <h1 className="text-3xl font-bold mb-2 text-blue-600 text-center" > {org.organization_name} Members </h1>
                         < p className="text-gray-700 text-center" >
-                            Here you can add members to your organization.
+                            Here you can add fee to your organization.
                         </p>
                     </div>
                     <div className="m-7">
 
                     </div>
-                    <form onSubmit={addMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto relative">
-                        <h2 className="text-white text-xl font-semibold mb-4"> {isHidden ? `Insert New Member` : "Insert Membership Information"}</h2>
-                        <button
-                            className={`absolute top-4 right-4 w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 hover:cursor-pointer ${isHidden ? 'bg-white' : 'bg-gray-200'}`}
-                            onClick={() => setIsHidden((prev) => !prev)}
-                            type="button"
-                        >
-                            <span
-                                className={`bg-[#7F8CAA] w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${isHidden ? 'translate-x-6' : ''}`}
-                            />
-                        </button>
+                    <form onSubmit={addFee} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto relative">
+
                         <div className="grid grid-cols-1 gap-4">
 
-                            <input
-                                type="number"
-                                name="member_id"
-                                value={memberData.member_id}
-                                onChange={handleChange}
-                                placeholder="Member ID"
-                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
+
                             <div className="grid grid-cols-2 gap-4">
                                 <input
-                                    type="text"
-                                    name="academic_year"
-                                    value={memberData.academic_year}
+                                    type="number"
+                                    name="member_id"
+                                    value={feeData.member_id}
                                     onChange={handleChange}
-                                    placeholder="A.Y."
+                                    placeholder="Member ID"
                                     className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                                 />
                                 <input
-                                    type="text"
-                                    name="semester"
-                                    value={memberData.semester}
+                                    type="number"
+                                    name="fee_amount"
+                                    value={feeData.fee_amount}
                                     onChange={handleChange}
-                                    placeholder="Semester"
+                                    placeholder="Fee Amount"
                                     className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                                 />
                             </div>
                             <input
                                 type="text"
-                                name="committee"
-                                value={memberData.committee}
+                                name="due_date"
+                                value={feeData.due_date}
                                 onChange={handleChange}
-                                placeholder="Committee"
+                                placeholder="Due Date (YYYY/MM/DD)"
                                 className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                             />
                             <input
                                 type="text"
-                                name="committee_role"
-                                value={memberData.committee_role}
+                                name="date_paid"
+                                value={feeData.date_paid}
                                 onChange={handleChange}
-                                placeholder="Role"
+                                placeholder="Date Paid"
                                 className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                             />
-                            <input
-                                type="text"
-                                name="member_status"
-                                value={memberData.member_status}
-                                onChange={handleChange}
-                                placeholder="Status"
-                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            {isHidden ? <input
-                                type="number"
-                                name="year_joined"
-                                value={memberData.year_joined}
-                                onChange={handleChange}
-                                placeholder="Year Joined"
-                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            /> : <></>}
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <input
+                                    type="text"
+                                    name="academic_year"
+                                    value={feeData.academic_year}
+                                    onChange={handleChange}
+                                    placeholder="A.Y"
+                                    className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                />
+                                <input
+                                    type="text"
+                                    name="semester"
+                                    value={feeData.semester}
+                                    onChange={handleChange}
+                                    placeholder="Semester"
+                                    className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                                />
+
+                            </div>
+
+
                             <button
                                 type="submit"
                                 className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-400 transition-colors duration-200 mt-2"
                             >
-                                Add Member
+                                Add Fee
                             </button>
                         </div>
                     </form>
