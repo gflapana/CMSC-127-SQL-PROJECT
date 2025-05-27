@@ -305,7 +305,7 @@ const OrgMembers = () => {
                                     </p>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
-                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Search Alumni based on Date </h2>
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Search all alumni based on date </h2>
 
                                     <form
                                         onSubmit={e => {
