@@ -1,8 +1,8 @@
 import express from "express";
-import { signIn } from "./auth.controller";
+import { signIn, signUpAsMember } from "./auth.controller";
 
 const authRouter = express.Router();
 
 authRouter.post("/login", signIn);
-
+authRouter.post("/signUpAsMember", signUpAsMember);
 export default authRouter;
