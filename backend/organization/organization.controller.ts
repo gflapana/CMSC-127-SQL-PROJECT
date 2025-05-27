@@ -507,10 +507,14 @@ FROM (
             params.push(req.query.id);
         }
 
-        if ( req.query.semester && typeof req.query.semester == 'string' && req.query.academic_year && typeof req.query.academic_year == 'string') {
-            query += ` AND f.academic_year = ?
-      AND f.semester = ? `;
+        if ( req.query.academic_year && typeof req.query.academic_year == 'string') {
+            query += ` AND f.academic_year = ? `;
             params.push(req.query.academic_year);
+            
+        }
+
+        if (req.query.semester && typeof req.query.semester == 'string'){
+            query += ' AND f.semester = ? ';
             params.push(req.query.semester);
         }
 
@@ -529,10 +533,14 @@ WHERE total_debt = (SELECT MAX(total_debt)
             params.push(req.query.id);
         }
 
-        if (req.query.semester && typeof req.query.semester == 'string' && req.query.academic_year && typeof req.query.academic_year == 'string') {
-            query += ` AND f.academic_year = ?
-                          AND f.semester = ? `
+        if ( req.query.academic_year && typeof req.query.academic_year == 'string') {
+            query += ` AND f.academic_year = ? `;
             params.push(req.query.academic_year);
+            
+        }
+
+        if (req.query.semester && typeof req.query.semester == 'string'){
+            query += ' AND f.semester = ? ';
             params.push(req.query.semester);
         }
 
@@ -797,7 +805,7 @@ const getFees = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT fee_id, member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, payment_status, semester, academic_year from member natural join fee";
+        let query = "SELECT fee_id, member_id, organization_name, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, payment_status, semester, academic_year from member natural join fee natural join organization";
         const conditions: string[] = [];
         const params: (string | number | null)[] = [];
         let order: string | null = null;
