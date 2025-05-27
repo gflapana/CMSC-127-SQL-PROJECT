@@ -27,8 +27,8 @@ const LogIn = () => {
             });
             if (response.data && response.data.user) {
                 if (role === "organization") {
-                    console.log(response.data.user.organization_id, "logged in successfully");
-                    setAuth({ user: response.data.user.organization_id, role: role });
+                    console.log(response.data.user, "logged in successfully");
+                    setAuth({ user: response.data.user, role: role });
                     localStorage.setItem('auth', JSON.stringify({ user: response.data.user.organization_id, role: role }));
                 }
 
@@ -49,9 +49,9 @@ const LogIn = () => {
     };
 
     return (
-        <div className={`h-screen w-screen flex items-center justify-center ${toggle ? "bg-blue-900" : "bg-gray-100"}`}>
-            <div className={`relative p-8 rounded-lg shadow-lg w-full max-w-sm transition-colors duration-300 ${toggle ? "bg-blue-500 text-white" : "bg-white"}`}>
-                <span className={`absolute top-4 left-4 font-semibold uppercase tracking-wide text-sm transition-colors duration-300 ${toggle ? "text-white" : "text-blue-500"}`}>
+        <div className={`h-screen w-screen flex items-center justify-center ${toggle ? "bg-blue-900" : "bg-[#333446]"}`}>
+            <div className={`relative p-8 rounded-lg shadow-lg w-full max-w-sm transition-colors duration-300 ${toggle ? "bg-blue-500 text-white" : "bg-[#B8CFCE]"}`}>
+                <span className={`absolute top-4 left-4 font-semibold uppercase tracking-wide text-sm transition-colors duration-300 ${toggle ? "text-white" : "text-black"}`}>
                     {toggle ? "Organization" : "Member"}
                 </span>
                 <button
@@ -60,10 +60,10 @@ const LogIn = () => {
                     type="button"
                 >
                     <span
-                        className={`bg-blue-500 w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${toggle ? 'translate-x-6' : ''}`}
+                        className={`bg-[#7F8CAA] w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${toggle ? 'translate-x-6' : ''}`}
                     />
                 </button>
-                <h2 className={`text-2xl font-bold my-6 text-center ${toggle ? "text-white" : "text-blue-500"}`}>
+                <h2 className={`text-2xl font-bold my-6 text-center ${toggle ? "text-white" : "text-black"}`}>
                     Welcome Back!
                 </h2>
                 {success && (
@@ -81,7 +81,7 @@ const LogIn = () => {
                         type="text"
                         placeholder={toggle ? "Organization Username" : "Username"}
                         onChange={(e) => setUsername(e.target.value)}
-                        className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 w-full ${toggle ? "focus:ring-white bg-blue-400 text-white placeholder-white border-blue-300" : "focus:ring-blue-400 text-black"}`}
+                        className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 w-full ${toggle ? "focus:ring-white bg-blue-400 text-white placeholder-white border-blue-300" : "placeholder-black text-black bg-[#EAEFEF] border-gray-300 focus:ring-neutral-200"}`}
                         required
                     />
                     <div className="relative">
@@ -90,7 +90,7 @@ const LogIn = () => {
                             placeholder="Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 w-full pr-10 ${toggle ? "focus:ring-white bg-blue-400 text-white placeholder-white border-blue-300" : "focus:ring-blue-400 text-black"}`}
+                            className={`border rounded px-3 py-2 focus:outline-none focus:ring-2 w-full pr-10 ${toggle ? "focus:ring-white bg-blue-400 text-white placeholder-white border-blue-300" : "focus:ring-neutral-200 bg-[#EAEFEF] border-gray-300 placeholder-black text-black"}`}
                             required
                         />
                         <button
@@ -104,7 +104,7 @@ const LogIn = () => {
                     </div>
                     <button
                         type="submit"
-                        className={`py-2 rounded transition cursor-pointer ${toggle ? "bg-white text-blue-500 hover:bg-blue-100" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                        className={`py-2 rounded transition cursor-pointer ${toggle ? "bg-white text-blue-500 hover:bg-blue-100" : "bg-[#7F8CAA] text-white hover:bg-[#6C7A8A]"} font-semibold`}
                     >
                         Log In
                     </button>
@@ -116,7 +116,7 @@ const LogIn = () => {
                                     ? navigate('/org-sign-up', { replace: true })
                                     : navigate('/member-sign-up', { replace: true });
                             }}
-                            className={`${toggle ? "text-white" : "text-blue-500"} underline hover: cursor-pointer`}
+                            className={`${toggle ? "text-white" : "text-[#7F8CAA]"} underline hover: cursor-pointer`}
                         >
                             Sign Up
                         </button>

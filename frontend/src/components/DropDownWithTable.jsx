@@ -1,3 +1,4 @@
+// Example: Dropdown with a table inside
 import React, { useState } from "react";
 
 const DropdownWithTable = () => {
@@ -12,20 +13,12 @@ const DropdownWithTable = () => {
 
     return (
         <div className="w-full max-w-md mx-auto mt-8">
-            <div
-                className="flex items-center justify-between bg-blue-500 text-white px-4 py-2 rounded-t cursor-pointer select-none"
+            <button
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-t hover:bg-blue-600 transition"
                 onClick={() => setOpen((prev) => !prev)}
             >
-                <span>Members</span>
-                <svg
-                    className={`w-5 h-5 transform transition-transform duration-300 ${open ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-            </div>
+                {open ? "Hide Members" : "Show Members"}
+            </button>
             {open && (
                 <div className="bg-white border border-blue-500 rounded-b shadow">
                     <table className="min-w-full text-left">
