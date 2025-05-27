@@ -41,7 +41,7 @@ const getOrganizations = async(
     res: express.Response,
     next: express.NextFunction
 ) => {
-    let query = "SELECT organization_id, organization_name, organization_type, date_established, years_active from organization where member_id = ?";
+    let query = "SELECT organization_id, organization_name, organization_type, date_established, years_active,year_joined, committee, committee_role,member_status, academic_year,semester from organization natural join organization_has_member where member_id = ?";
     let params: string[] = [];
     if (req.query.id && typeof req.query.id == 'string'){
         params.push(req.query.id);
