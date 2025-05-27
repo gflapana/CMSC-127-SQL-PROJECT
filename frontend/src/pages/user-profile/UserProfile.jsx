@@ -1,5 +1,5 @@
 import UserNavBar from "../../components/UserNavBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../api/axios.js";
 import useAuth from "../../hooks/useAuth.jsx";
 import { Edit2 } from 'lucide-react';
@@ -16,7 +16,6 @@ const UserProfile = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [memberData, setMemberData] = useState({
         member_id: member_id,
-
         first_name: member.first_name,
         middle_name: member.middle_name || "",
         last_name: member.last_name,
@@ -24,6 +23,7 @@ const UserProfile = () => {
         degree_program: member.degree_program,
         batch: member.batch,
     })
+    const [user, setUser] = useState(member);
 
     const handleEditClick = (member) => {
         setMemberData({
@@ -42,7 +42,6 @@ const UserProfile = () => {
         setMemberData((prev) => ({ ...prev, [name]: value }));
     };
 
-
     const handleCancel = () => {
         setIsEditing(false);
     };
@@ -51,6 +50,7 @@ const UserProfile = () => {
         e.preventDefault();
         try {
             await api.put(`/member/editDetails`, memberData);
+            setUser(memberData)
             handleCancel();
         } catch (error) {
             console.error("Error updating member:", error);
@@ -144,31 +144,31 @@ const UserProfile = () => {
                                         handleEditClick(member);
                                     }}
                                     className="text-blue-500 hover:text-blue-700 mb-6"
-                                    aria-label={`Edit member ${memberData?.first_name} ${memberData?.last_name}`}
+                                    aria-label={`Edit member ${user?.first_name} ${user?.last_name}`}
                                 >
                                     <Edit2 className="w-5 h-5" />
                                 </button>
                             )}
                             <p className="text-gray-700 mb-6">Profile</p>
                             <h1 className="text-3xl font-bold mb-4 text-blue-600 mb-10">
-                                {memberData?.first_name} {memberData?.middle_name} {memberData?.last_name}
+                                {user?.first_name} {user?.middle_name} {user?.last_name}
                             </h1>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-md mx-auto">
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
-                                    <p className="text-gray-600 font-semibold">memberData ID:</p>
-                                    <p className="text-gray-800">{memberData?.member_id || "N/A"}</p>
+                                    <p className="text-gray-600 font-semibold">user ID:</p>
+                                    <p className="text-gray-800">{user?.member_id || "N/A"}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
                                     <p className="text-gray-600 font-semibold">Sex:</p>
-                                    <p className="text-gray-800">{memberData?.sex || "N/A"}</p>
+                                    <p className="text-gray-800">{user?.sex || "N/A"}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
                                     <p className="text-gray-600 font-semibold">Degree Program:</p>
-                                    <p className="text-gray-800">{memberData?.degree_program || "N/A"}</p>
+                                    <p className="text-gray-800">{user?.degree_program || "N/A"}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
                                     <p className="text-gray-600 font-semibold">Batch:</p>
-                                    <p className="text-gray-800">{memberData?.batch || "N/A"}</p>
+                                    <p className="text-gray-800">{user?.batch || "N/A"}</p>
                                 </div>
                             </div>
                         </div>
