@@ -8,13 +8,13 @@ const editDetails = async (
 ) => {
     let query = "UPDATE member SET first_name = ?, middle_name = ?, last_name = ?, sex = ?, degree_program = ?, batch = ?  WHERE member_id = ?";
     let params: string[] = [];
-        params.push(req.body.first_name);
-        params.push(req.body.middle_name);
-        params.push(req.body.last_name);
-        params.push(req.body.sex);
-        params.push(req.body.degree_program);
-        params.push(req.body.batch);
-        params.push(req.body.member_id);
+    params.push(req.body.first_name);
+    params.push(req.body.middle_name);
+    params.push(req.body.last_name);
+    params.push(req.body.sex);
+    params.push(req.body.degree_program);
+    params.push(req.body.batch);
+    params.push(req.body.member_id);
 
     console.log(params);
     try {
@@ -35,3 +35,5 @@ const editDetails = async (
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+export { editDetails };
