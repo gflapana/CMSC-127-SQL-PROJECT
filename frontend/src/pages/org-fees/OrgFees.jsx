@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown } from 'lucide-react';
+import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
 
 const OrgFees = () => {
     const { auth, setAuth } = useAuth();
@@ -21,6 +21,8 @@ const OrgFees = () => {
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
     const [semester, setSemester] = useState("");
+    const [dateQuery, setDateQuery] = useState("");
+    const [dateInput, setDateInput] = useState("");
 
     useEffect(() => {
         const getMemFees = async () => {
@@ -36,7 +38,7 @@ const OrgFees = () => {
             }
         };
         getMemFees();
-    }, [id, acadYearQuery, semester, selectedFilter])
+    }, [id, acadYearQuery, semester, selectedFilter, tableView])
 
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
 
@@ -245,6 +247,28 @@ const OrgFees = () => {
                             <div className="flex gap-6">
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
                                     <h2 className="text-lg font-semibold mb-4 text-blue-600">Paid and Unpaid Fees</h2>
+                                    <form
+                                        onSubmit={e => {
+                                            e.preventDefault();
+                                            setDateQuery(dateInput);
+                                        }}
+                                        className="flex mb-4"
+                                    >
+                                        <input
+                                            type="text"
+                                            placeholder="Search by date..."
+                                            value={dateInput}
+                                            onChange={e => setDateInput(e.target.value)}
+                                            className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
+                                        >
+                                            Search
+                                        </button>
+                                    </form>
+
                                     {/* Search bar for "How many semesters from now?" without form and submit button */}
                                     {/* <input
                                         type="number"

@@ -301,7 +301,6 @@ const OrgMembers = () => {
                                     </p>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
-                                    {/* Date search bar */}
                                     <form
                                         onSubmit={e => {
                                             e.preventDefault();
