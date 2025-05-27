@@ -41,7 +41,7 @@ const OrgSignUp = () => {
                 password: inputs.password
             });
             if (orgSignIn.data.status === "success") {
-                navigate('/log-in', { replace: true });
+                navigate('/', { replace: true });
             }
             else {
                 console.error("Sign up failed:", orgSignIn.data.message);

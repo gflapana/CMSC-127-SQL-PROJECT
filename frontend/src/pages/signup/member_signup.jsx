@@ -50,7 +50,7 @@ const MemberSignUp = () => {
                 password: inputs.password
             })
             if (userSignIn.data.status === "success") {
-                navigate('/log-in', { replace: true });
+                navigate('/', { replace: true });
             }
             console.log("Member Sign Up Response:", userSignIn.data);
         } catch (error) {
