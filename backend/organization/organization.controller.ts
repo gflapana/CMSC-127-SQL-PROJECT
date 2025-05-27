@@ -903,7 +903,7 @@ const getFees = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT fee_id, member_id, organization_name, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, payment_status, semester, academic_year from member natural join fee natural join organization";
+        let query = "SELECT fee_id, member_id, organization_id, organization_name, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, payment_status, semester, academic_year from member natural join fee natural join organization";
         const conditions: string[] = [];
         const params: (string | number | null)[] = [];
         let order: string | null = null;
