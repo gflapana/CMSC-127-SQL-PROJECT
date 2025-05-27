@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
@@ -8,6 +8,7 @@ const OrgMembers = () => {
     const { auth } = useAuth();
 
     const [members, setMembers] = useState([]);
+    const [percentageMems, setPercentageMems] = useState([]);
     const [selectedFilter, setSelectedFilter] = useState("committee_role");
     const [filterSort, setFilterSort] = useState("committee_role");
     const [sortOrder, setSortOrder] = useState("asc");
@@ -17,6 +18,7 @@ const OrgMembers = () => {
     const [semester, setSemester] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
+    const [pastSemesters, setPastSemesters] = useState("");
 
     const org = auth?.user;
     const id = org.organization_id;
@@ -42,6 +44,20 @@ const OrgMembers = () => {
         getAllMembersFiltered();
     }, [id, selectedFilter, sortOrder, searchQuery, acadYearQuery, semester, filterSort]);
 
+    useEffect(() => {
+        const getMemPercentage = async () => {
+            try {
+                const response = await api.get(`/organization/getPercentage?id=${id}&semesters=${pastSemesters}`);
+                console.log("Percentage Data:", response.data);
+                console.log("Percentage Data Specific:", response.data.percentage);
+                setPercentageMems(response.data.percentage);
+            } catch (error) {
+                console.error("Error fetching percentage data:", error);
+            }
+        }
+        getMemPercentage();
+    }, [pastSemesters, id]);
+
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
     const handleFilterSortChange = (e) => setFilterSort(e.target.value);
     const handleSortChange = (e) => setSortOrder(e.target.value);
@@ -62,6 +78,10 @@ const OrgMembers = () => {
     // Update tableView on dropdown change
     const handleTableChange = (e) => {
         setTableView(e.target.value);
+    };
+
+    const handlePastSemChange = (e) => {
+        setPastSemesters(e.target.value);
     };
 
     return (
@@ -242,32 +262,56 @@ const OrgMembers = () => {
                                 </tbody>
                             </table>
                         ) : (
-                            <table className="text-sm border-collapse mx-auto w-full">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
-                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {members.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={3} className="text-center py-4 text-gray-400">
-                                                No members found.
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        members.map((member, idx) => (
-                                            <tr key={member.id || idx}>
-                                                <td className="px-3 py-2">{member.member_id}</td>
-                                                <td className="px-3 py-2">{member.first_name + " " + member.last_name}</td>
-                                                <td className="px-3 py-2">{member.status}</td>
+                            <div className="flex gap-6">
+                                <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Summary</h2>
+                                    {/* Search bar for "How many semesters from now?" without form and submit button */}
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        placeholder="How many semesters from now?"
+                                        value={pastSemesters}
+                                        onChange={handlePastSemChange}
+                                        className="border px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full rounded"
+                                    />
+                                    <p className="text-gray-700 mb-2">Total Members: {percentageMems.total_members}</p>
+                                    <p className="text-gray-700 mb-2">
+                                        Active: {percentageMems.active_count_percentage ? `${parseFloat(percentageMems.active_count_percentage).toFixed(0)}%` : "0%"}
+                                    </p>
+                                    <p className="text-gray-700 mb-2">
+                                        Inactive: {percentageMems.inactive_count_percentage ? `${parseFloat(percentageMems.inactive_count_percentage).toFixed(0)}%` : "0%"}
+                                    </p>
+                                </div>
+                                <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
+                                    <table className="text-sm border-collapse w-full">
+                                        <thead className="bg-gray-100">
+                                            <tr>
+                                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
+                                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
+                                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Status</th>
                                             </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+                                        </thead>
+                                        <tbody>
+                                            {members.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={3} className="text-center py-4 text-gray-400">
+                                                        No members found.
+                                                    </td>
+                                                </tr>
+                                            ) : (
+                                                members.map((member, idx) => (
+                                                    <tr key={member.id || idx}>
+                                                        <td className="px-3 py-2">{member.member_id}</td>
+                                                        <td className="px-3 py-2">{member.first_name + " " + member.last_name}</td>
+                                                        <td className="px-3 py-2">{member.status}</td>
+                                                    </tr>
+                                                ))
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         )}
                     </div>
                 </div>
