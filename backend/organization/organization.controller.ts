@@ -743,4 +743,40 @@ const addMemberToOrganization = async (
     }
 };
 
-export { getMembers, findEligibleMember, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization };
+const updateMemberToOrganization = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "UPDATE organization_has_member SET year_joined = ?, committee = ?, committee_role = ?, member_status = ? WHERE organization_id = ? AND member_id = ? AND academic_year = ? AND semester = ?";
+    let params: (string | number | null)[] = [];
+
+    params.push(req.body.year_joined);
+    params.push(req.body.committee);
+    params.push(req.body.committee_role);
+    params.push(req.body.member_status);
+    params.push(req.body.id);
+    params.push(req.body.member_id);
+    params.push(req.body.academic_year);
+    params.push(req.body.semester);
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export { getMembers, findEligibleMember, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization };
