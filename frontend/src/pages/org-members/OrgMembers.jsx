@@ -281,7 +281,7 @@ const OrgMembers = () => {
                         ) : (
                             <div className="flex gap-6">
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
-                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Summary</h2>
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Inactive and Active Count</h2>
                                     {/* Search bar for "How many semesters from now?" without form and submit button */}
                                     <input
                                         type="number"
