@@ -513,7 +513,7 @@ WHERE total_debt = (SELECT MAX(total_debt)
                         JOIN organization_has_member AS ohm ON f.member_id = ohm.member_id
                         WHERE f.date_paid IS NULL 
                           AND ohm.organization_id = ?
-                          AND f.academic_year = +
+                          AND f.academic_year = ?
                           AND f.semester = ?
                         GROUP BY f.member_id
                     ) AS max_debts)`;
