@@ -1,0 +1,78 @@
+// import { useState } from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
+// import './App.css'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LogIn from "./pages/login/Login";
+import MemberSignUp from "./pages/signup/Member_Signup";
+import OrgSignUp from "./pages/signup/Org_Signup";
+import RequireAuth from "./components/RequireAuth";
+import Unauthorized from "./pages/unauthorized/Unauthorized";
+import OrgHome from "./pages/org-home/OrgHome";
+import OrgFees from "./pages/org-fees/OrgFees";
+import OrgMembers from "./pages/org-members/OrgMembers";
+
+function App() {
+  const routes = [
+    {
+      path: "/",
+      element: <h1>Welcome to the CMSC 127 SQL Project</h1>
+    },
+    {
+      path: "/log-in",
+      element: <LogIn />
+    },
+    {
+      path: "/member-sign-up",
+      element: <MemberSignUp />
+    },
+    {
+      path: "/org-sign-up",
+      element: <OrgSignUp />
+    },
+    {
+      path: "/unauthorized",
+      element: <Unauthorized />
+    },
+    {
+      path: "/user-home",
+      element: (
+        <RequireAuth allowedRole="member">
+
+        </RequireAuth>
+      )
+    },
+    {
+      path: "/org-home",
+      element: (
+        <RequireAuth allowedRole="organization">
+          <OrgHome />
+        </RequireAuth>
+      )
+    },
+    {
+      path: '/org-fees',
+      element: (
+        <RequireAuth allowedRole="organization">
+          <OrgFees />
+        </RequireAuth>
+      )
+    },
+    {
+      path: "/org-members",
+      element: (
+        <RequireAuth allowedRole="organization">
+          <OrgMembers />
+        </RequireAuth>
+      )
+    }
+  ]
+  const router = createBrowserRouter(routes)
+  return (
+    <>
+      <RouterProvider router={router} />
+    </>
+  )
+}
+
+export default App
