@@ -137,23 +137,6 @@ const UpdateFee = () => {
                         </p>
                     </div>
 
-                    
-
-                    {/* Table View Selector and Sort */}
-                    <div className="flex flex-row justify-between gap-4 mb-6">
-                        <div className="relative">
-                            <ArrowDown className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                            <select
-                                onChange={handleTableChange}
-                                className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                value={tableView}
-                            >
-                                <option value="viewall">View All</option>
-                                <option value="statusreport">Status Report</option>
-                            </select>
-                        </div>
-
-                    </div>
                     {tableView === "viewall" && (
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                             <div className="flex items-center gap-2 w-full md:w-auto">

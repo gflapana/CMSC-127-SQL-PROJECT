@@ -23,6 +23,6 @@ organizationRouter.post("/addFee", addFee);
 organizationRouter.post("/addMemberToOrganization", addMemberToOrganization);
 organizationRouter.post("/updateMemberToOrganization", updateMemberToOrganization);
 organizationRouter.put("/updateFee", updateFee);
-organizationRouter.delete("/deleteFee",deleteFee);
+organizationRouter.post("/deleteFee",deleteFee);
 
 export default organizationRouter;

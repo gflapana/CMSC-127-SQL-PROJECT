@@ -27,6 +27,11 @@ const DeleteFee = () => {
     const [semesterDebt, setSemesterDebt] = useState("");
     const [acadYearDebtInput, setAcadYearDebtInput] = useState("");
     const [acadYearDebtQuery, setAcadYearDebtQuery] = useState("");
+    const [delMemId, setDelMemId] = useState("");
+    const [delOrgId, setDelOrgId] = useState("");
+    const [delSemester, setDelSemester] = useState("");
+    const [delAcadYear, setDelAcadYear] = useState("");
+    const [delFeeId, setDelFeeId] = useState("");
 
     useEffect(() => {
         const getMemFees = async () => {
@@ -102,6 +107,27 @@ const DeleteFee = () => {
         setTableView(e.target.value);
     };
 
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        // if (name === "member_id") setDelMemId(value);
+        // else if (name === "org_id") setDelOrgId(value);
+        // else if (name === "semester") setDelSemester(value);
+        // else if (name === "acad_year") setDelAcadYear(value);
+        if(name === "fee_id") setDelFeeId(value);
+    }
+
+    const deleteFee = async (e) => {
+        e.preventDefault();
+        // console.log("Deleting Member ID:", delMemId);
+        // console.log("Organization ID:", delOrgId);
+        // console.log("Semester:", delSemester);
+        // console.log("Academic Year:", delAcadYear);
+        console.log("Deleting Fee ID:", delFeeId);
+        await api.post(`/organization/deleteFee`, {
+            fee_id: delFeeId,
+        });
+    }
+
     return (
         <div className="min-h-screen bg-gray-100">
             <OrgNavBar />
@@ -110,89 +136,52 @@ const DeleteFee = () => {
                     <div className="mb-6">
                         <h1 className="text-3xl font-bold mb-2 text-blue-600 text-center">{org.organization_name} Fees</h1>
                         <p className="text-gray-700 text-center">
-                            Here you can view and manage your organization's fee.
+                            Edit Org Fees.
                         </p>
                     </div>
-                    {/* Table View Selector and Sort */}
-                    <div className="flex flex-row justify-between gap-4 mb-6">
-                        <div className="relative">
-                            <ArrowDown className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                            <select
-                                onChange={handleTableChange}
-                                className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                value={tableView}
+                    <form onSubmit={deleteFee} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                        <div className="grid grid-cols-1 gap-4 pt-5">
+                            <input
+                                type="number"
+                                name="fee_id"
+                                value={delFeeId}
+                                onChange={handleChange}
+                                placeholder="Fee ID"
+                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            />
+                            {/* <input
+                                type="number"
+                                name="org_id"
+                                value={delOrgId}
+                                onChange={handleChange}
+                                placeholder="Organization ID"
+                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            />
+                            <input
+                                type="text"
+                                name="semester"
+                                value={delSemester}
+                                onChange={handleChange}
+                                placeholder="Semester"
+                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            />
+                            <input
+                                type="text"
+                                name="acad_year"
+                                value={delAcadYear}
+                                onChange={handleChange}
+                                placeholder="Academic Year"
+                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            /> */}
+                            <button
+                                type="submit"
+                                className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-400 transition-colors duration-200 mt-2"
                             >
-                                <option value="viewall">View All</option>
-                                <option value="statusreport">Status Report</option>
-                            </select>
+                                Delete Member
+                            </button>
                         </div>
+                    </form>
 
-                    </div>
-                    {tableView === "viewall" && (
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                            <div className="flex items-center gap-2 w-full md:w-auto">
-                                <div className="relative">
-                                    <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    <select
-                                        onChange={handleSelectChange}
-                                        className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue=""
-                                    >
-                                        <option value="">All Status</option>
-                                        <option value="Paid">Paid</option>
-                                        <option value="Unpaid">Unpaid</option>
-                                        <option value="Paid Late">Paid Late</option>
-                                    </select>
-                                </div>
-                                {/* <form onSubmit={handleSearchSubmit} className="flex w-full md:w-auto">
-                                    <input
-                                        type="text"
-                                        placeholder="Search..."
-                                        value={searchInput}
-                                        onChange={(e) => setSearchInput(e.target.value)}
-                                        className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-r"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    >
-                                        Search
-                                    </button>
-                                </form> */}
-                            </div>
-                            <div className="flex items-center gap-2 w-full md:w-auto">
-                                <div className="relative">
-                                    <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    <select
-                                        onChange={handleSemChange}
-                                        className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="1st Semester"
-                                    >
-                                        <option value="">All semester</option>
-                                        <option value="1st Semester">1st semester</option>
-                                        <option value="2nd Semester">2nd semester</option>
-                                    </select>
-                                </div>
-                                <form onSubmit={handleAcadYearSubmit} className="flex w-full md:w-auto">
-                                    <input
-                                        type="text"
-                                        placeholder="Search A.Y."
-                                        value={acadYearInput}
-                                        onChange={(e) => setAcadYearInput(e.target.value)}
-                                        className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-40 rounded-l"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
-                                    >
-                                        Search
-                                    </button>
-                                </form>
-
-                            </div>
-                        </div>
-                    )}
-                    {/* Table */}
                     <div>
                         {tableView === "viewall" ? (
                             <table className="text-sm border-collapse mx-auto w-full">
@@ -200,6 +189,7 @@ const DeleteFee = () => {
                                     <tr>
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee ID</th>
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Member ID</th>
+                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Org ID</th>
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee Amount</th>
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Due Date</th>
@@ -221,6 +211,7 @@ const DeleteFee = () => {
                                             <tr key={member.id || idx}>
                                                 <td className="px-3 py-2">{member.fee_id}</td>
                                                 <td className="px-3 py-2">{member.member_id}</td>
+                                                <td className="px-3 py-2">{member.organization_id}</td>
                                                 <td className="px-3 py-2">{member.first_name + " " + member.last_name}</td>
                                                 <td className="px-3 py-2">{member.fee_amount}</td>
                                                 <td className="px-3 py-2">
