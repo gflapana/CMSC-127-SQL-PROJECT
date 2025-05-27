@@ -34,25 +34,24 @@ SELECT member.member_id AS "Member ID",CONCAT(first_name," ",last_name) AS "Name
 SELECT member.member_id AS "Member ID",CONCAT(first_name," ",last_name) AS "Name", sex AS "Sex",degree_program AS "Degree Program",batch AS "University Batch", committee AS "Committee", academic_year AS "Academic Year Joined", semester AS "Semester Joined" FROM organization_has_member JOIN member ON organization_has_member.member_id=member.member_id WHERE committee_role="Member" AND organization_id=1 ORDER BY CONCAT(academic_year,semester) desc;
 
 -- 6 View all late payments made by all members of a given organization for a given semester and academic year. (change the where clause to get the desired organization, semester, and academic year)
-SELECT ohm.member_id, CONCAT(m.first_name, ' ', m.last_name) AS full_name, f.fee_amount, f.due_date, f.date_paid, f.payment_status, f.semester, f.academic_year
+SELECT ohm.member_id, m.first_name, IFNULL(m.middle_name,'') middle_name, last_name, f.fee_amount, f.due_date, f.date_paid, f.payment_status, f.semester, f.academic_year
 FROM organization AS o
 JOIN organization_has_member AS ohm ON o.organization_id = ohm.organization_id
 JOIN member AS m ON ohm.member_id = m.member_id
 JOIN fee AS f ON ohm.member_id = f.member_id
 WHERE (f.due_date < f.date_paid 
-    AND ohm.organization_id = 4 -- change this to the desired organization
-    AND f.semester = "2nd Semester" -- change this to the desired semester
-    AND f.academic_year = "2024-2025"); -- change this to the desired academic year
+    AND ohm.organization_id = 4 
+    -- change this to the desired organization
+    AND f.semester = '2nd Semester'
+     -- change this to the desired semester
+    AND f.academic_year = '2024-2025');
+     -- change this to the desired academic year
 
 -- 7 View the percentage of active vs inactive members of a given organization for the last n semesters. (Note: n is a positive integer)
 -- to change the semesters (n), change the value of 4 (past_n_emesters) in the select statement, 
-SELECT 
-    4 as past_n_emesters,
-    100 * (SELECT COUNT(*) 
-     FROM organization_has_member AS ohm 
-     JOIN organization AS o ON ohm.organization_id = o.organization_id 
+SELECT 4 as past_n_semesters, 100 * (SELECT COUNT(*) FROM organization_has_member AS ohm JOIN organization AS o ON ohm.organization_id = o.organization_id 
      WHERE ohm.member_status = 'Active' 
-       AND o.organization_id = 1 -- change this to the desired organization
+       AND o.organization_id = 1 
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
