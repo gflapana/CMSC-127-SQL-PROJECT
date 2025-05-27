@@ -13,6 +13,7 @@ const OrgFees = () => {
     console.log("Fees Organization ID:", id);
 
     const [members, setMembers] = useState([]);
+    const [debtors, setDebtors] = useState([]);
     const [tableView, setTableView] = useState("viewall");
     const [selectedFilter, setSelectedFilter] = useState("");
     const [totalFees, setTotalFees] = useState();;
@@ -61,6 +62,21 @@ const OrgFees = () => {
         getOrgFees();
     }, [id, dateQuery]);
 
+    useEffect(() => {
+        const getDebtMembers = async () => {
+            try {
+                const allDebtMemFees = await api.get(
+                    `organization/getHighestDebtor/?id=${id}&semester=${semesterDebt}&academic_year=${acadYearDebtQuery}`
+                )
+                setDebtors(Array.isArray(allDebtMemFees.data.debtor) ? allDebtMemFees.data.debtor : []);
+                console.log("Fetched Debt Members:", allDebtMemFees.data.debtor);
+            } catch (error) {
+                console.error("Error fetching debt members:", error);
+            }
+        };
+        getDebtMembers();
+    }, [semesterDebt, acadYearDebtQuery, id]);
+
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
 
 
@@ -75,13 +91,11 @@ const OrgFees = () => {
     const handleAcadYearSubmit = (e) => {
         e.preventDefault();
         setAcadYearQuery(acadYearInput);
-        // You can also trigger a fetch or filter here if needed
     };
 
     const handleAcadYearSubmitDebt = (e) => {
         e.preventDefault();
         setAcadYearDebtQuery(acadYearDebtInput);
-
     }
 
     const handleTableChange = (e) => {
@@ -191,7 +205,7 @@ const OrgFees = () => {
                                     <select
                                         onChange={handleSemChange}
                                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="Choose semester"
+                                        defaultValue=""
                                     >
                                         <option value="">All semester</option>
                                         <option value="1st Semester">1st semester</option>
@@ -257,14 +271,15 @@ const OrgFees = () => {
                                                         })
                                                         : ""}
                                                 </td>
-                                                <td className="px-3 py-2 italic">
+                                                <td className="px-3 py-2">
                                                     {member.date_paid
                                                         ? new Date(member.date_paid).toLocaleDateString('en-US', {
                                                             year: 'numeric',
                                                             month: 'long',
                                                             day: 'numeric'
                                                         })
-                                                        : "null"}
+                                                        : <span className="italic">null</span>
+                                                    }
                                                 </td>
                                                 <td className="px-3 py-2">{member.payment_status}</td>
                                                 <td className="px-3 py-2">{member.semester}</td>
@@ -300,10 +315,10 @@ const OrgFees = () => {
                                         </button>
                                     </form>
                                     <p className="text-gray-700 mb-2">
-                                        Total Paid Fees: ₱{totalFees.total_paid_fees}
+                                        Total Paid Fees: ₱{totalFees?.total_paid_fees != null ? totalFees.total_paid_fees : 0}
                                     </p>
                                     <p className="text-gray-700 mb-2">
-                                        Total Unpaid Fees: ₱{totalFees.total_unpaid_fees}
+                                        Total Unpaid Fees: ₱{totalFees?.total_unpaid_fees != null ? totalFees.total_unpaid_fees : 0}
                                     </p>
 
                                     {/* Search bar for "How many semesters from now?" without form and submit button */}
@@ -331,9 +346,8 @@ const OrgFees = () => {
                                             <select
                                                 onChange={handleSemChangeDebt}
                                                 className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                                defaultValue=""
+                                                defaultValue="1st Semester"
                                             >
-                                                <option value="">All semester</option>
                                                 <option value="1st Semester">1st semester</option>
                                                 <option value="2nd Semester">2nd semester</option>
                                             </select>
@@ -341,7 +355,7 @@ const OrgFees = () => {
                                                 <input
                                                     type="text"
                                                     placeholder="Search A.Y."
-                                                    value={acadYearInput}
+                                                    value={acadYearDebtInput}
                                                     onChange={(e) => setAcadYearDebtInput(e.target.value)}
                                                     className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-40 rounded-l"
                                                 />
@@ -375,34 +389,32 @@ const OrgFees = () => {
                                             Search
                                         </button>
                                     </form> */}
-                                    {/* <table className="text-sm border-collapse w-full">
+                                    <table className="text-sm border-collapse w-full">
                                         <thead className="bg-gray-100">
                                             <tr>
-                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
+                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">User ID</th>
                                                 <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
-                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
-                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Academic year</th>
+                                                <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Total Debt</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {alumni.length === 0 ? (
+                                            {debtors.length === 0 ? (
                                                 <tr>
                                                     <td colSpan={3} className="text-center py-4 text-gray-400">
                                                         No members found.
                                                     </td>
                                                 </tr>
                                             ) : (
-                                                alumni.map((alum, idx) => (
-                                                    <tr key={alum.id || idx}>
-                                                        <td className="px-6 py-2">{alum.member_id}</td>
-                                                        <td className="px-6 py-2">{alum.first_name + " " + alum.last_name}</td>
-                                                        <td className="px-6 py-2">{alum.semester}</td>
-                                                        <td className="px-6 py-2">{alum.academic_year}</td>
+                                                debtors.map((debtor, idx) => (
+                                                    <tr key={debtor.id || idx}>
+                                                        <td className="px-6 py-2">{debtor.member_id}</td>
+                                                        <td className="px-6 py-2">{debtor.first_name + " " + debtor.last_name}</td>
+                                                        <td className="px-6 py-2">{debtor.total_debt}</td>
                                                     </tr>
                                                 ))
                                             )}
                                         </tbody>
-                                    </table> */}
+                                    </table>
                                 </div>
                             </div>
 
