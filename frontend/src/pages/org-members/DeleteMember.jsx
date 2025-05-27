@@ -8,7 +8,7 @@ const DeleteMember = () => {
 
     const { auth } = useAuth();
     const [eligibleMembers, setEligibleMembers] = useState([]);
-    const [memberId, setMemberId] = useState(0)
+    const [memberId, setMemberId] = useState("")
 
     const org = auth?.user;
     const id = org.organization_id;
@@ -24,18 +24,15 @@ const DeleteMember = () => {
             }
         };
         getAllEligibleMembers();
-    }, [eligibleMembers])
+    }, [id])
 
     const handleChange = (e) => {
         setMemberId(e.target.value)
     };
 
     const deleteMember = async () => {
-        memberData.id = id;
-        await api.delete(`/organization/deleteMember`, {
-            method: DELETE,
-            body: JSON.stringify(memberId)
-        })
+        console.log(memberId);
+        await api.post(`/organization/deleteMember`, { member_id: memberId })
     }
 
     return (
@@ -47,16 +44,18 @@ const DeleteMember = () => {
                     < div className="mb-6" >
                         <h1 className="text-3xl font-bold mb-2 text-blue-600 text-center" > {org.organization_name} Members </h1>
                         < p className="text-gray-700 text-center" >
-                            Here you can add members to your organization.
+                            Here you can delete members from your organization.
                         </p>
                     </div>
 
-                    <form onSubmit={DeleteMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                        <h2 className="text-white text-xl font-semibold mb-4">Add a Member</h2>
-                        <div className="grid grid-cols-1 gap-4">
+                    <div className="m-10">
+
+                    </div>
+                    <form onSubmit={deleteMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                        <div className="grid grid-cols-1 gap-4 pt-5">
 
                             <input
-                                type="text"
+                                type="number"
                                 name="member_id"
                                 value={memberId}
                                 onChange={handleChange}
@@ -71,7 +70,7 @@ const DeleteMember = () => {
                             </button>
                         </div>
                     </form>
-                    <div className="m-20">
+                    <div className="m-15">
 
                     </div>
                     {/* Table */}
@@ -84,12 +83,13 @@ const DeleteMember = () => {
                                     <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Sex</th>
                                     <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Degree Program</th>
                                     <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Univ Batch</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Year Joined</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {eligibleMembers.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="text-center py-4 text-gray-400">
+                                        <td colSpan={6} className="text-center py-4 text-gray-400">
                                             No members found.
                                         </td>
                                     </tr>
@@ -101,6 +101,8 @@ const DeleteMember = () => {
                                             <td className="px-3 py-2">{member.sex}</td>
                                             <td className="px-3 py-2">{member.degree_program}</td>
                                             <td className="px-3 py-2">{member.batch}</td>
+                                            <td className="px-3 py-2">{member.year_joined}</td>
+
                                         </tr>
                                     ))
                                 )}

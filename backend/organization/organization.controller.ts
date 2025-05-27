@@ -585,9 +585,9 @@ const deleteMember = async (
     try {
         const conn = await pool.getConnection();
         try {
-            await conn.query(`DELETE FROM organization_has_member WHERE member_id=${req.body.id}`);
-            await conn.query(`DELETE FROM fee WHERE member_id=${req.body.id}`);
-            await conn.query(`DELETE FROM member WHERE member_id=${req.body.id}`);
+            await conn.query(`DELETE FROM organization_has_member WHERE member_id=${req.body.member_id}`);
+            await conn.query(`DELETE FROM fee WHERE member_id=${req.body.member_id}`);
+            await conn.query(`DELETE FROM member WHERE member_id=${req.body.member_id}`);
             res.json({ status: "success" });
         } catch (err) {
             console.error(err);
