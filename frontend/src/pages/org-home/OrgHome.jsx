@@ -1,0 +1,33 @@
+import React from "react";
+import OrgNavBar from "../../components/OrgNavBar";
+import useAuth from "../../hooks/useAuth.jsx";
+
+const OrgHome = () => {
+
+    const { auth, setAuth } = useAuth();
+
+    const org = auth?.user;
+    const id = org.id;
+    console.log("Home Organization ID:", id);
+    console.log("Home Auth:", auth.user);
+
+    return (
+        <div className="min-h-screen bg-gray-100">
+            <OrgNavBar />
+            <div className="max-w-7xl mx-auto mt-12 p-8 bg-white rounded-lg shadow text-center">
+                <h1 className="text-3xl font-bold mb-4 text-blue-600">{org.organization_name}</h1>
+                <p className="text-gray-700">
+                    Welcome to your organization's dashboard! Use the navigation bar above to manage fees, view members, and more.
+                </p>
+                <p>
+                    Organization Type: {org.organization_type}
+                </p>
+                <p>
+                    Organization ID: {org.organization_id}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+export default OrgHome;

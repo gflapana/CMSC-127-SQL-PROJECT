@@ -10,8 +10,8 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json()); // for JSON bodies
 app.use(express.urlencoded({ extended: true })); // for form submissions
 
-app.use("/auth", authRouter);
-app.use("/organization", organizationRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/organization", organizationRouter);
 
 
 const PORT = process.env.PORT;
