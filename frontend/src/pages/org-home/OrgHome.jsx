@@ -7,7 +7,7 @@ const OrgHome = () => {
     const { auth, setAuth } = useAuth();
 
     const org = auth?.user;
-    const id = org.id;
+    const id = org.organization_id;
     console.log("Home Organization ID:", id);
     console.log("Home Auth:", auth.user);
 
