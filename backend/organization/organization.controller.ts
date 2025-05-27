@@ -734,6 +734,51 @@ const addFee = async (
     }
 };
 
+const updateFee = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "UPDATE fee SET fee_amount = ?, due_date = ?, date_paid = ?, payment_status = ? WHERE semester = ? AND academic_year = ? AND organizaion_id = ? AND member_id = ?";
+
+    let params: (string | number | null)[] = [];
+
+    params.push(req.body.fee_amount);
+    params.push(req.body.due_date);
+    params.push(req.body.date_paid);
+    
+    if (!req.body.date_paid){
+        params.push("Unpaid");
+    } else if (new Date(req.body.date_paid) > new Date(req.body.due_date)){
+        params.push("Paid Late");
+    } else {
+        params.push("Paid");
+    }
+
+    params.push(req.body.semester);
+    params.push(req.body.academic_year);
+    params.push(req.body.id);
+    params.push(req.body.member_id);
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
 const addMemberToOrganization = async (
     req: express.Request,
     res: express.Response,
@@ -900,4 +945,4 @@ const getFees = async (
     }
 };
 
-export { getMembers, findEligibleMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees };
+export { getMembers, findEligibleMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees, updateFee };
