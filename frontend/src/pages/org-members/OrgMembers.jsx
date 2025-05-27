@@ -8,7 +8,7 @@ const OrgMembers = () => {
     const { auth } = useAuth();
 
     const [members, setMembers] = useState([]);
-    const [selectedFilter, setSelectedFilter] = useState("degree");
+    const [selectedFilter, setSelectedFilter] = useState("degree_program");
     const [sortOrder, setSortOrder] = useState("asc");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
@@ -20,8 +20,9 @@ const OrgMembers = () => {
     useEffect(() => {
         const getAllMembersFiltered = async () => {
             try {
-                const allMembersFiltered = await api.get(`/organization/getMembers?id=${id}&${selectedFilter}=${searchQuery}`);
+                const allMembersFiltered = await api.get(`/organization/getMembers?id=${id}&${selectedFilter}=${searchQuery}&order=${selectedFilter}&desc=${sortOrder}`);
                 setMembers(Array.isArray(allMembersFiltered.data.members) ? allMembersFiltered.data.members : []);
+                console.log("Filtered Members:", allMembersFiltered.data.members);
             } catch (error) {
                 console.error("Error fetching members:", error);
             }
@@ -75,8 +76,8 @@ const OrgMembers = () => {
                                     value={sortOrder}
                                     onChange={handleSortChange}
                                 >
-                                    <option value="asc">Ascending</option>
-                                    <option value="desc">Descending</option>
+                                    <option value="etc">Ascending</option>
+                                    <option value="true">Descending</option>
                                 </select>
                             </div>
                         )}
@@ -92,12 +93,12 @@ const OrgMembers = () => {
                                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
                                         defaultValue="committee_role"
                                     >
-                                        <option value="committee_rol">Academic Year</option>
-                                        <option value="status">Status</option>
-                                        <option value="sex">Sex</option>
+                                        <option value="committee_role">Committee Role</option>
+                                        <option value="member_status">Status</option>
                                         <option value="degree_program">Degree Program</option>
-                                        <option value="batch">Batch</option>
-                                        <option value="committee_role">Committee</option>
+                                        <option value="sex">Sex</option>
+                                        <option value="year_joined">Org Batch</option>
+                                        <option value="committee">Committee</option>
                                     </select>
                                 </div>
                                 <form onSubmit={handleSearchSubmit} className="flex w-full md:w-auto">
@@ -174,11 +175,11 @@ const OrgMembers = () => {
                                                 <td className="px-3 py-2">{member.sex}</td>
                                                 <td className="px-3 py-2">{member.degree_program}</td>
                                                 <td className="px-3 py-2">{member.batch}</td>
-                                                <td className="px-3 py-2">{member.batch}</td>
+                                                <td className="px-3 py-2">{member.year_joined}</td>
                                                 <td className="px-3 py-2">{member.committee}</td>
                                                 <td className="px-3 py-2">{member.committee_role}</td>
-                                                <td className="px-3 py-2">{member.status}</td>
-                                                <td className="px-3 py-2">{member.academic_year}</td>
+                                                <td className="px-3 py-2">{member.member_status}</td>
+                                                <td className="px-3 py-2">{member.semester}</td>
                                                 <td className="px-3 py-2">{member.academic_year}</td>
                                             </tr>
                                         ))
