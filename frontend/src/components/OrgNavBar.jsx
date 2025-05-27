@@ -43,7 +43,7 @@ const OrgNavBar = () => {
             case 'view':
                 navigate('/org-fees');
                 break;
-            case 'update':
+            case 'edit':
                 navigate('/update-fee');
                 break;
             default:

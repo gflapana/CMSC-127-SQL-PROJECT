@@ -51,8 +51,8 @@ const UserProfile = () => {
         try {
             await api.put(`/member/editDetails`, memberData);
             setUser(memberData)
-            setAuth({ user: member_id, role: "member" });
-            localStorage.setItem('auth', JSON.stringify({ user: organizationData.member_id, role: "member" }));
+            setAuth({ user: memberData, role: "member" });
+            localStorage.setItem('auth', JSON.stringify({ user: memberData, role: "member" }));
             handleCancel();
         } catch (error) {
             console.error("Error updating member:", error);

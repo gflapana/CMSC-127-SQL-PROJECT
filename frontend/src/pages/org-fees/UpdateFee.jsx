@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
+import { ChartBar, Menu, ArrowDown, TabletSmartphone, Edit2 } from 'lucide-react';
 
 const UpdateFee = () => {
     const { auth, setAuth } = useAuth();
@@ -13,6 +13,7 @@ const UpdateFee = () => {
     console.log("Fees Organization ID:", id);
 
     const [members, setMembers] = useState([]);
+    const [selectedMember, setSelectedMember] = useState(null);
     const [debtors, setDebtors] = useState([]);
     const [tableView, setTableView] = useState("viewall");
     const [selectedFilter, setSelectedFilter] = useState("");
@@ -27,6 +28,15 @@ const UpdateFee = () => {
     const [semesterDebt, setSemesterDebt] = useState("");
     const [acadYearDebtInput, setAcadYearDebtInput] = useState("");
     const [acadYearDebtQuery, setAcadYearDebtQuery] = useState("");
+    const [memberData, setMemberData] = useState({
+        fee_amount: 0,
+        due_date: "",
+        date_paid: "",
+        semester: "",
+        academic_year: "",
+        id: null,
+        member_id: null,
+    })
 
     useEffect(() => {
         const getMemFees = async () => {
@@ -76,6 +86,19 @@ const UpdateFee = () => {
         };
         getDebtMembers();
     }, [semesterDebt, acadYearDebtQuery, id]);
+
+    const handleEditClick = (member) => {
+        setSelectedMember(member);
+        setMemberData({
+            fee_amount: member.fee_amount || 0,
+            due_date: member.due_date || "",
+            date_paid: member.date_paid || "",
+            semester: member.semester || "",
+            academic_year: member.academic_year || "",
+            id: member.id,
+            member_id: member.member_id
+        })
+    }
 
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
 
@@ -144,21 +167,6 @@ const UpdateFee = () => {
                                         <option value="Paid Late">Paid Late</option>
                                     </select>
                                 </div>
-                                {/* <form onSubmit={handleSearchSubmit} className="flex w-full md:w-auto">
-                                    <input
-                                        type="text"
-                                        placeholder="Search..."
-                                        value={searchInput}
-                                        onChange={(e) => setSearchInput(e.target.value)}
-                                        className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-r"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    >
-                                        Search
-                                    </button>
-                                </form> */}
                             </div>
                             <div className="flex items-center gap-2 w-full md:w-auto">
                                 <div className="relative">
@@ -207,6 +215,7 @@ const UpdateFee = () => {
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Payment Status</th>
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
                                         <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">A.Y.</th>
+                                        <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Edit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -245,6 +254,15 @@ const UpdateFee = () => {
                                                 <td className="px-3 py-2">{member.payment_status}</td>
                                                 <td className="px-3 py-2">{member.semester}</td>
                                                 <td className="px-3 py-2">{member.academic_year}</td>
+                                                <td className="px-3 py-2">
+                                                    <button
+                                                        // onClick={() => handleEditClick(member)}
+                                                        className="text-blue-500 hover:text-blue-700"
+                                                        aria-label={`Edit member ${member.first_name} ${member.last_name}`}
+                                                    >
+                                                        <Edit2 className="w-5 h-5" />
+                                                    </button>
+                                                </td>
                                             </tr>
                                         ))
                                     )}
@@ -281,23 +299,6 @@ const UpdateFee = () => {
                                     <p className="text-gray-700 mb-2">
                                         Total Unpaid Fees: ₱{totalFees?.total_unpaid_fees != null ? totalFees.total_unpaid_fees : 0}
                                     </p>
-
-                                    {/* Search bar for "How many semesters from now?" without form and submit button */}
-                                    {/* <input
-                                        type="number"
-                                        min="0"
-                                        placeholder="How many semesters from now?"
-                                        value={pastSemesters}
-                                        onChange={handlePastSemChange}
-                                        className="border px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full rounded"
-                                    />
-                                    <p className="text-gray-700 mb-2">Total Members: {percentageMems.total_members}</p>
-                                    <p className="text-gray-700 mb-2">
-                                        Active: {percentageMems.active_count_percentage ? `${parseFloat(percentageMems.active_count_percentage).toFixed(0)}%` : "0%"}
-                                    </p>
-                                    <p className="text-gray-700 mb-2">
-                                        Inactive: {percentageMems.inactive_count_percentage ? `${parseFloat(percentageMems.inactive_count_percentage).toFixed(0)}%` : "0%"}
-                                    </p> */}
                                 </div>
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
                                     <h2 className="text-lg font-semibold mb-4 text-blue-600">Members with highest debt</h2>
@@ -329,27 +330,6 @@ const UpdateFee = () => {
                                             </form>
                                         </div>
                                     </div>
-                                    {/* <form
-                                        onSubmit={e => {
-                                            e.preventDefault();
-                                            setDateQuery(dateInput);
-                                        }}
-                                        className="flex mb-4"
-                                    >
-                                        <input
-                                            type="text"
-                                            placeholder="Search by date..."
-                                            value={dateInput}
-                                            onChange={e => setDateInput(e.target.value)}
-                                            className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
-                                        >
-                                            Search
-                                        </button>
-                                    </form> */}
                                     <table className="text-sm border-collapse w-full">
                                         <thead className="bg-gray-100">
                                             <tr>
