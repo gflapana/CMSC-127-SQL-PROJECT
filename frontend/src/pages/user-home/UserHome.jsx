@@ -10,6 +10,8 @@ const UserHome = () => {
     const id = member.id;
     console.log("Member ID:", id);
     console.log("Home Auth:", auth.user);
+    console.log(member)
+
 
     return (
         <div className="min-h-screen bg-gray-100">
