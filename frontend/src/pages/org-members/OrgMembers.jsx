@@ -13,7 +13,9 @@ const OrgMembers = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
 
-    const id = auth?.user.organization_id;
+    // const id = auth?.user.organization_id;
+    const org = auth?.user
+    const id = org.organization_id;
 
     useEffect(() => {
         const getAllMembersFiltered = async () => {
@@ -45,7 +47,7 @@ const OrgMembers = () => {
                 <div className="bg-white p-8 rounded-lg shadow inline-block mx-auto w-full max-w-6xl">
                     {/* Card Header */}
                     <div className="mb-6">
-                        <h1 className="text-3xl font-bold mb-2 text-blue-600 text-center">Organization Members</h1>
+                        <h1 className="text-3xl font-bold mb-2 text-blue-600 text-center">{org.organization_name} Members</h1>
                         <p className="text-gray-700 text-center">
                             Here you can view and manage your organization's members.
                         </p>
@@ -56,10 +58,10 @@ const OrgMembers = () => {
                             <select
                                 onChange={handleTableChange}
                                 className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                defaultValue="degree"
+                                defaultValue="viewall"
                             >
-                                <option value="degree">View All</option>
-                                <option value="status">Status Report</option>
+                                <option value="viewall">View All</option>
+                                <option value="statusreport">Status Report</option>
                             </select>
                         </div>
                         <div className="relative w-full md:w-auto max-w-xs">
@@ -83,7 +85,7 @@ const OrgMembers = () => {
                                     className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
                                     defaultValue="committee_role"
                                 >
-                                    <option value="role">Academic Year</option>
+                                    <option value="committee_rol">Academic Year</option>
                                     <option value="status">Status</option>
                                     <option value="sex">Sex</option>
                                     <option value="degree_program">Degree Program</option>
