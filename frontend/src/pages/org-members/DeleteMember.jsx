@@ -4,20 +4,11 @@ import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
 import { ChartBar, Menu, ArrowDown } from 'lucide-react';
 
-const AddMember = () => {
+const DeleteMember = () => {
 
     const { auth } = useAuth();
     const [eligibleMembers, setEligibleMembers] = useState([]);
-    const [memberData, setMemberData] = useState({
-        id: 0,
-        member_id: 0,
-        year_joined: 2025,
-        committee: '',
-        committee_role: '',
-        member_status: '',
-        academic_year: '',
-        semester: ''
-    });
+    const [memberId, setMemberId] = useState(0)
 
     const org = auth?.user;
     const id = org.organization_id;
@@ -36,16 +27,15 @@ const AddMember = () => {
     }, [eligibleMembers])
 
     const handleChange = (e) => {
-        setMemberData({
-            ...memberData,
-            [e.target.name]: e.target.value
-        });
+        setMemberId(e.target.value)
     };
 
-    const addMember = async () => {
-        const payload = { ...memberData, id };
-        console.log(`Member Data: ${payload}`);
-        await api.post(`/organization/addMemberToOrganization`, payload)
+    const deleteMember = async () => {
+        memberData.id = id;
+        await api.delete(`/organization/deleteMember`, {
+            method: DELETE,
+            body: JSON.stringify(memberId)
+        })
     }
 
     return (
@@ -61,73 +51,23 @@ const AddMember = () => {
                         </p>
                     </div>
 
-                    <form onSubmit={addMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
+                    <form onSubmit={DeleteMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
                         <h2 className="text-white text-xl font-semibold mb-4">Add a Member</h2>
                         <div className="grid grid-cols-1 gap-4">
 
                             <input
-                                type="number"
+                                type="text"
                                 name="member_id"
-                                value={memberData.member_id}
+                                value={memberId}
                                 onChange={handleChange}
                                 placeholder="Member ID"
-                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <div className="grid grid-cols-2 gap-4">
-                                <input
-                                    type="text"
-                                    name="academic_year"
-                                    value={memberData.academic_year}
-                                    onChange={handleChange}
-                                    placeholder="A.Y."
-                                    className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                />
-                                <input
-                                    type="text"
-                                    name="semester"
-                                    value={memberData.semester}
-                                    onChange={handleChange}
-                                    placeholder="Semester"
-                                    className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                />
-                            </div>
-                            <input
-                                type="text"
-                                name="committee"
-                                value={memberData.committee}
-                                onChange={handleChange}
-                                placeholder="Committee"
-                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <input
-                                type="text"
-                                name="committee_role"
-                                value={memberData.committee_role}
-                                onChange={handleChange}
-                                placeholder="Role"
-                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <input
-                                type="text"
-                                name="member_status"
-                                value={memberData.member_status}
-                                onChange={handleChange}
-                                placeholder="Status"
-                                className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
-                            <input
-                                type="number"
-                                name="year_joined"
-                                value={memberData.year_joined}
-                                onChange={handleChange}
-                                placeholder="Year Joined"
                                 className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                             />
                             <button
                                 type="submit"
                                 className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-400 transition-colors duration-200 mt-2"
                             >
-                                Add Member
+                                Delete Member
                             </button>
                         </div>
                     </form>
@@ -176,4 +116,4 @@ const AddMember = () => {
 
 
 
-export default AddMember;
+export default DeleteMember;
