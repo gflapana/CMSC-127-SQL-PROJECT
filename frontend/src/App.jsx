@@ -11,6 +11,7 @@ import Unauthorized from "./pages/unauthorized/Unauthorized";
 import OrgHome from "./pages/org-home/OrgHome";
 import OrgFees from "./pages/org-fees/OrgFees";
 import OrgMembers from "./pages/org-members/OrgMembers";
+import AddMember from "./pages/org-members/AddMember";
 
 function App() {
   const routes = [
@@ -55,6 +56,14 @@ function App() {
       element: (
         <RequireAuth allowedRole="organization">
           <OrgFees />
+        </RequireAuth>
+      )
+    },
+    {
+      path: '/add-member',
+      element: (
+        <RequireAuth allowedRole="organization">
+          <AddMember />
         </RequireAuth>
       )
     },
