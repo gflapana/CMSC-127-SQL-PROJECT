@@ -107,7 +107,6 @@ const OrgFees = () => {
             <OrgNavBar />
             <div className="flex items-start justify-center py-12">
                 <div className="bg-white p-8 rounded-lg shadow inline-block mx-auto w-full max-w-6xl">
-                    {/* Card Header */}
                     <div className="mb-6">
                         <h1 className="text-3xl font-bold mb-2 text-blue-600 text-center">{org.organization_name} Fees</h1>
                         <p className="text-gray-700 text-center">
@@ -127,46 +126,8 @@ const OrgFees = () => {
                                 <option value="statusreport">Status Report</option>
                             </select>
                         </div>
-                        {/* Only show sort dropdown in viewall */}
-                        {tableView === "viewall" && (
-                            <div className="flex items-center gap-2">
-                                {/* <div className="relative w-full md:w-auto max-w-xs">
-                                    <ChartBar className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    <select
-                                        className="border rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none w-full md:w-auto"
-                                        value={filterSort}
-                                        onChange={handleFilterSortChange}
-                                    >
-                                        <option value="committee_role">Committee Role</option>
-                                        <option value="member_status">Status</option>
-                                        <option value="degree_program">Degree Program</option>
-                                        <option value="sex">Sex</option>
-                                        <option value="year_joined">Org Batch</option>
-                                        <option value="committee">Committee</option>
-                                        <option value="semester">Semester</option>
-                                        <option value="academic_year">A.Y.</option>
-                                    </select>
-                                </div> */}
-                                {/* <div className="relative w-full md:w-auto max-w-xs">
-                                    <ChartBar className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    <select
-                                        className="border rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none w-full md:w-auto"
-                                        value={sortOrder}
-                                        onChange={handleSortChange}
-                                    >
-                                        <option value="etc">Ascending</option>
-                                        <option value="true">Descending</option>
-                                    </select>
-                                </div> */}
-                            </div>
-
-
-
-                        )}
-
 
                     </div>
-                    {/* Only show filters/search in viewall */}
                     {tableView === "viewall" && (
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                             <div className="flex items-center gap-2 w-full md:w-auto">
@@ -205,7 +166,7 @@ const OrgFees = () => {
                                     <select
                                         onChange={handleSemChange}
                                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue=""
+                                        defaultValue="1st Semester"
                                     >
                                         <option value="">All semester</option>
                                         <option value="1st Semester">1st semester</option>
@@ -426,58 +387,6 @@ const OrgFees = () => {
         </div>
     );
 
-    // return (
-    //     <div className="min-h-screen bg-gray-100">
-    //         <OrgNavBar />
-    //         <div className="max-w-3xl mx-auto mt-12 p-8 bg-white rounded-lg shadow">
-    //             <h1 className="text-3xl font-bold mb-4 text-blue-600 text-center">Organization Fees</h1>
-    //             <p className="text-gray-700 text-center">
-    //                 Here you can view and manage your organization's fees.
-    //             </p>
-    //             <div className="flex items-center gap-2 mb-6">
-    //                 {/* Filter Dropdown with Icon */}
-    //                 <div className="relative">
-    //                     <ChartBar className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-    //                     <select
-    //                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-    //                         defaultValue="degree"
-    //                     >
-    //                         <option value="degree">Role</option>
-    //                         <option value="batch">Status</option>
-    //                         <option value="batch">Gender</option>
-    //                         <option value="batch">Degree Program</option>
-    //                         <option value="batch">Batch</option>
-    //                         <option value="batch">Committee</option>
-    //                         {/* Add more filter options as needed */}
-    //                     </select>
-    //                 </div>
-    //                 {/* Search Input */}
-    //                 <input
-    //                     type="text"
-    //                     placeholder="Search..."
-    //                     className="border rounded-r px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    //                 />
-    //             </div>
-    //             <div className="flex justify-center mt-6">
-    //                 <table className="text-sm border-collapse mx-auto">
-    //                     <thead className="bg-gray-100">
-    //                         <tr>
-    //                             <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
-    //                             <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
-    //                             <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Degree Program</th>
-    //                             <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">University Batch</th>
-    //                             <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Committee</th>
-    //                             <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Status</th>
-    //                             <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Year Joined</th>
-    //                         </tr>
-    //                     </thead>
-    //                     <tbody>
-    //                     </tbody>
-    //                 </table>
-    //             </div>
-    //         </div>
-    //     </div>
-    // );
 };
 
 export default OrgFees;
