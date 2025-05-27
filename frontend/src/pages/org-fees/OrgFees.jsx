@@ -15,7 +15,7 @@ const OrgFees = () => {
     const [members, setMembers] = useState([]);
     const [tableView, setTableView] = useState("viewall");
     const [selectedFilter, setSelectedFilter] = useState("");
-
+    const [totalFees, setTotalFees] = useState();;
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
@@ -48,6 +48,8 @@ const OrgFees = () => {
                     `organization/getTotalFees/?id=${id}&date=${dateQuery}`
                 );
                 console.log("Total Fees Response:", getAllFees.data);
+                console.log("Total Fees Response: payments", getAllFees.data.payments);
+                setTotalFees(getAllFees.data.payments);
             } catch (error) {
                 console.error("Error fetching total fees:", error);
             }
@@ -284,7 +286,9 @@ const OrgFees = () => {
                                             Search
                                         </button>
                                     </form>
-
+                                    <p className="text-gray-700 mb-2">
+                                        {/* {totalFees.total_paid_fees} */}
+                                    </p>
                                     {/* Search bar for "How many semesters from now?" without form and submit button */}
                                     {/* <input
                                         type="number"
