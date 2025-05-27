@@ -417,7 +417,7 @@ WHERE ohm.member_status = 'alumni'
             query += `AND (
       (MONTH(?) BETWEEN 8 AND 12 AND (LEFT(ohm.academic_year,4) < YEAR(?) OR  (LEFT(ohm.academic_year,4) = YEAR(?) AND ohm.semester = '1st Semester'))) OR
       (MONTH(?) BETWEEN 1 AND 7 AND RIGHT(ohm.academic_year,4) <= YEAR(?))
-  );`
+  )`;
             params.push(req.query.date);
             params.push(req.query.date);
             params.push(req.query.date);
