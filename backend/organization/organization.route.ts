@@ -1,10 +1,10 @@
 import express from "express";
-import { addEvent, addFee, addMemberToOrganization, deleteEvent, deleteMember, editDetails, findEligibleMember, getAlumni, getExecutiveMembers, getFees, getHighestDebtor, getLatePayments, getMembers, getMembersByRole, getPercentage, getTotalFees, getUnpaidMembers, updateMemberToOrganization } from "./organization.controller";
+import { addEvent, addFee, addMemberToOrganization, deleteEvent, deleteMember, editDetails, findEligibleMembers, getAlumni, getExecutiveMembers, getFees, getHighestDebtor, getLatePayments, getMembers, getMembersByRole, getPercentage, getTotalFees, getUnpaidMembers, updateMemberToOrganization } from "./organization.controller";
 
 const organizationRouter = express.Router();
 
 organizationRouter.get("/getMembers", getMembers);
-organizationRouter.get("/findEligibleMembers", findEligibleMember);
+organizationRouter.get("/findEligibleMembers", findEligibleMembers);
 organizationRouter.get("/getUnpaidMembers", getUnpaidMembers);
 organizationRouter.get("/getExecutiveMembers", getExecutiveMembers);
 organizationRouter.get("/getMembersByRole", getMembersByRole);
