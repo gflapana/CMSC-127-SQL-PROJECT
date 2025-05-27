@@ -406,7 +406,11 @@ ON o.organization_id = ohm.organization_id
 JOIN member AS m
 ON m.member_id = ohm.member_id
 WHERE ohm.member_status = 'alumni' 
-  AND o.organization_id = ? `;
+  AND o.organization_id = ? 
+  AND (
+      (MONTH(?) BETWEEN 8 AND 12 AND (LEFT(ohm.academic_year,4) < YEAR(?) OR  (LEFT(ohm.academic_year,4) = YEAR(?) AND ohm.semester = '1st Semester'))) OR
+      (MONTH(?) BETWEEN 1 AND 7 AND RIGHT(ohm.academic_year,4) <= YEAR(?))
+  );`;
         const params: (string | number)[] = [];
 
         if (req.query.id && typeof req.query.id == 'string') {
@@ -414,13 +418,6 @@ WHERE ohm.member_status = 'alumni'
         }
 
         if (req.query.date && typeof req.query.date == 'string') {
-            query += `AND (
-      (MONTH(?) BETWEEN 8 AND 12 AND (LEFT(ohm.academic_year,4) < YEAR(?) OR  (LEFT(ohm.academic_year,4) = YEAR(?) AND ohm.semester = '1st Semester'))) OR
-      (MONTH(?) BETWEEN 1 AND 7 AND RIGHT(ohm.academic_year,4) <= YEAR(?))
-  )`;
-            params.push(req.query.date);
-            params.push(req.query.date);
-            params.push(req.query.date);
             params.push(req.query.date);
             params.push(req.query.date);
         }
@@ -584,10 +581,10 @@ DELETE FROM fee WHERE member_id=?;
 DELETE FROM member WHERE member_id=?;`;
 
     let params: string[] = [];
-    if (req.body.member_id && typeof req.body.member_id == 'number') {
-        params.push(req.body.member_id);
-        params.push(req.body.member_id);
-        params.push(req.body.member_id);
+    if (req.body.id && typeof req.body.id == 'number') {
+        params.push(req.body.id);
+        params.push(req.body.id);
+        params.push(req.body.id);
     }
 
     console.log(params);
@@ -819,19 +816,7 @@ const getFees = async (
         }
 
         if (req.query.payment_status && typeof req.query.payment_status == 'string') {
-            switch (req.query.payment_status.toLowerCase()) {
-                case 'paid':
-                    conditions.push('date_paid <= due_date');
-                    break;
-                case 'unpaid':
-                    conditions.push('date_paid IS NULL');
-                    break;
-                case 'paid late':
-                    conditions.push('date_paid > due_date');
-                    break;
-                default:
-                    res.status(400).json({error: "Incorrect payment status"});
-            }
+            conditions.push(`payment_status like '%${req.query.payment_status}%'`);
         }
 
         if (req.query.semester && typeof req.query.semester == 'string') {
