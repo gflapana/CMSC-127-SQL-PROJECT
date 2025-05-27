@@ -8,26 +8,31 @@ const OrgMembers = () => {
     const { auth } = useAuth();
 
     const [members, setMembers] = useState([]);
-    const [selectedFilter, setSelectedFilter] = useState("degree_program");
+    const [selectedFilter, setSelectedFilter] = useState("committee_role");
+    const [filterSort, setFilterSort] = useState("committee_role");
     const [sortOrder, setSortOrder] = useState("asc");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
     const [tableView, setTableView] = useState("viewall"); // NEW
+    const [semester, setSemester] = useState("");
+    const [acadYearInput, setAcadYearInput] = useState("");
+    const [acadYearQuery, setAcadYearQuery] = useState("");
 
     const org = auth?.user;
     const id = org.organization_id;
 
 
     useEffect(() => {
-        setSortOrder("asc");      
-        setSearchQuery("");       
-        setSearchInput("");       
+        setSortOrder("asc");
+        setSearchQuery("");
+        setSearchInput("");
     }, [selectedFilter]);
 
     useEffect(() => {
         const getAllMembersFiltered = async () => {
             try {
-                const allMembersFiltered = await api.get(`/organization/getMembers?id=${id}&${selectedFilter}=${searchQuery}&order=${selectedFilter}&desc=${sortOrder}`);
+                const allMembersFiltered = await api.get(
+                    `/organization/getMembers?id=${id}&${selectedFilter}=${searchQuery}&semester=${semester}&academic_year=${acadYearQuery}&order=${filterSort}&desc=${sortOrder}`);
                 setMembers(Array.isArray(allMembersFiltered.data.members) ? allMembersFiltered.data.members : []);
                 console.log("Filtered Members:", allMembersFiltered.data.members);
             } catch (error) {
@@ -35,13 +40,23 @@ const OrgMembers = () => {
             }
         };
         getAllMembersFiltered();
-    }, [id, selectedFilter, sortOrder, searchQuery]);
+    }, [id, selectedFilter, sortOrder, searchQuery, acadYearQuery, semester, filterSort]);
 
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
+    const handleFilterSortChange = (e) => setFilterSort(e.target.value);
     const handleSortChange = (e) => setSortOrder(e.target.value);
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         setSearchQuery(searchInput);
+    };
+    const handleAcadYearSubmit = (e) => {
+        e.preventDefault();
+        setAcadYearQuery(acadYearInput);
+        // You can also trigger a fetch or filter here if needed
+    };
+
+    const handleSemChange = (e) => {
+        setSemester(e.target.value);
     };
 
     // Update tableView on dropdown change
@@ -76,18 +91,42 @@ const OrgMembers = () => {
                         </div>
                         {/* Only show sort dropdown in viewall */}
                         {tableView === "viewall" && (
-                            <div className="relative w-full md:w-auto max-w-xs">
-                                <ChartBar className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                <select
-                                    className="border rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none w-full md:w-auto"
-                                    value={sortOrder}
-                                    onChange={handleSortChange}
-                                >
-                                    <option value="etc">Ascending</option>
-                                    <option value="true">Descending</option>
-                                </select>
+                            <div className="flex items-center gap-2">
+                                <div className="relative w-full md:w-auto max-w-xs">
+                                    <ChartBar className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    <select
+                                        className="border rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none w-full md:w-auto"
+                                        value={filterSort}
+                                        onChange={handleFilterSortChange}
+                                    >
+                                        <option value="committee_role">Committee Role</option>
+                                        <option value="member_status">Status</option>
+                                        <option value="degree_program">Degree Program</option>
+                                        <option value="sex">Sex</option>
+                                        <option value="year_joined">Org Batch</option>
+                                        <option value="committee">Committee</option>
+                                        <option value="semester">Semester</option>
+                                        <option value="academic_year">A.Y.</option>
+                                    </select>
+                                </div>
+                                <div className="relative w-full md:w-auto max-w-xs">
+                                    <ChartBar className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    <select
+                                        className="border rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none w-full md:w-auto"
+                                        value={sortOrder}
+                                        onChange={handleSortChange}
+                                    >
+                                        <option value="etc">Ascending</option>
+                                        <option value="true">Descending</option>
+                                    </select>
+                                </div>
                             </div>
+
+
+
                         )}
+
+
                     </div>
                     {/* Only show filters/search in viewall */}
                     {tableView === "viewall" && (
@@ -106,6 +145,7 @@ const OrgMembers = () => {
                                         <option value="sex">Sex</option>
                                         <option value="year_joined">Org Batch</option>
                                         <option value="committee">Committee</option>
+
                                     </select>
                                 </div>
                                 <form onSubmit={handleSearchSubmit} className="flex w-full md:w-auto">
@@ -128,23 +168,31 @@ const OrgMembers = () => {
                                 <div className="relative">
                                     <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                     <select
-                                        onChange={handleSelectChange}
+                                        onChange={handleSemChange}
                                         className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="semester"
+                                        defaultValue="Choose semester"
                                     >
-                                        <option value="semester">Semester</option>
+                                        <option value="">All semester</option>
+                                        <option value="1st Semester">1st semester</option>
+                                        <option value="2nd Semester">2nd semester</option>
                                     </select>
                                 </div>
-                                <div className="relative">
-                                    <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                    <select
-                                        onChange={handleSelectChange}
-                                        className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                        defaultValue="role"
+                                <form onSubmit={handleAcadYearSubmit} className="flex w-full md:w-auto">
+                                    <input
+                                        type="text"
+                                        placeholder="Search A.Y."
+                                        value={acadYearInput}
+                                        onChange={(e) => setAcadYearInput(e.target.value)}
+                                        className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-40 rounded-l"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
                                     >
-                                        <option value="acadyear">Academic Year</option>
-                                    </select>
-                                </div>
+                                        Search
+                                    </button>
+                                </form>
+
                             </div>
                         </div>
                     )}
