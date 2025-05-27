@@ -95,10 +95,11 @@ const findEligibleMember = async (
     next: express.NextFunction
 ) => {
     try {
-        const query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member";
+        const query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) from member m";
+        const params = [req.query.id];
         const conn = await pool.getConnection();
         try {
-            const members = await conn.query(query);
+            const members = await conn.query(query,params);
             // console.log(members);
             res.json({ members });
         } catch (err) {
@@ -310,9 +311,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) / (SELECT COUNT(*) 
@@ -322,9 +323,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)}
     ) AS active_count_percentage, 
@@ -337,9 +338,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) / (SELECT COUNT(*) 
@@ -349,9 +350,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year,4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year,4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) AS inactive_count_percentage,
@@ -363,9 +364,9 @@ const getPercentage = async (
        AND (
            CASE 
                WHEN semester = '1st Semester' THEN 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2)
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2)
                ELSE 
-                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, ${parseInt(req.query.semesters)}), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
+                   ((YEAR(CURDATE()) - YEAR(STR_TO_DATE(CONCAT(LEFT(academic_year, 4), '-06-01'), '%Y-%m-%d'))) * 2) - 1 
            END
        ) <= ${parseInt(req.query.semesters)} 
     ) AS total_members`;
@@ -779,4 +780,67 @@ const updateMemberToOrganization = async (
     }
 };
 
-export { getMembers, findEligibleMember, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization };
+const getFees = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        let query = "SELECT fee_id, member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, semester, academic_year from member natural join fee";
+        const conditions: string[] = [];
+        const params: (string | number | null)[] = [];
+        let order: string | null = null;
+
+        if (req.query.id && typeof req.query.id == 'string') {
+            conditions.push('organization_id =  ?');
+            params.push(req.query.id);
+        }
+
+        if (req.query.member_id && typeof req.query.member_id == 'string') {
+            conditions.push('member_id =  ?');
+            params.push(req.query.member_id);
+        }
+
+        if (req.query.fee_amount && typeof req.query.fee_amount == 'string') {
+            conditions.push('fee_amount =  ?');
+            params.push(req.query.fee_amount);
+        }
+
+        if (req.query.due_date && typeof req.query.due_date == 'string') {
+            conditions.push('due_date =  ?');
+            params.push(req.query.due_date);
+        }
+
+        if (req.query.date_paid && typeof req.query.date_paid == 'string') {
+            conditions.push('date_paid =  ?');
+            params.push(req.query.date_paid);
+        }
+
+        if (req.query.semester && typeof req.query.semester == 'string') {
+            conditions.push(`semester like '%${req.query.semester}'`);
+        }
+
+        if (req.query.academic_year && typeof req.query.academic_year == 'string') {
+            conditions.push('academic_year =  ?');
+            params.push(req.query.academic_year);
+        }
+
+        console.log(params);
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export { getMembers, findEligibleMember, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees };
