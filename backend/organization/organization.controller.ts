@@ -98,7 +98,7 @@ const findEligibleMembers = async (
         const params = [req.query.id];
         const conn = await pool.getConnection();
         try {
-            const members = await conn.query("SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) year_joined from member m",params);
+            const members = await conn.query("SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) year_joined from member m", params);
             // console.log(members);
             res.json({ members });
         } catch (err) {

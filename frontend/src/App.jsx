@@ -12,6 +12,8 @@ import OrgHome from "./pages/org-home/OrgHome";
 import OrgFees from "./pages/org-fees/OrgFees";
 import OrgMembers from "./pages/org-members/OrgMembers";
 import AddMember from "./pages/org-members/AddMember";
+import DeleteMember from "./pages/org-members/DeleteMember";
+import EditMember from "./pages/org-members/EditMember";
 
 function App() {
   const routes = [
@@ -64,6 +66,22 @@ function App() {
       element: (
         <RequireAuth allowedRole="organization">
           <AddMember />
+        </RequireAuth>
+      )
+    },
+    {
+      path: '/delete-member',
+      element: (
+        <RequireAuth allowedRole="organization">
+          <DeleteMember />
+        </RequireAuth>
+      )
+    },
+    {
+      path: '/edit-member',
+      element: (
+        <RequireAuth allowedRole="organization">
+          <EditMember />
         </RequireAuth>
       )
     },
