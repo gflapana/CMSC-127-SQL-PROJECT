@@ -341,10 +341,10 @@ const OrgMembers = () => {
                                             ) : (
                                                 alumni.map((alum, idx) => (
                                                     <tr key={alum.id || idx}>
-                                                        <td className="px-3 py-2">{alum.member_id}</td>
-                                                        <td className="px-3 py-2">{alum.first_name + " " + alum.last_name}</td>
-                                                        <td className="px-3 py-2">{alum.semester}</td>
-                                                        <td className="px-3 py-2">{alum.acad_year}</td>
+                                                        <td className="px-6 py-2">{alum.member_id}</td>
+                                                        <td className="px-6 py-2">{alum.first_name + " " + alum.last_name}</td>
+                                                        <td className="px-6 py-2">{alum.semester}</td>
+                                                        <td className="px-6 py-2">{alum.academic_year}</td>
                                                     </tr>
                                                 ))
                                             )}
