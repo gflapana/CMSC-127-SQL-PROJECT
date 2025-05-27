@@ -9,7 +9,8 @@ const getMembers = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, batch, degree_program, year_joined, member_status, committee, committee_role, academic_year, semester from member natural join organization_has_member";
+        console.log(req.query.distinct);
+        let query = `SELECT ${(req.query.distinct) ? "distinct" : ""} member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, batch, degree_program, year_joined, member_status, committee, committee_role, academic_year, semester from member natural join organization_has_member`;
         const conditions: string[] = [];
         const params: (string | number)[] = [];
         let order: string | null = null;
@@ -622,7 +623,7 @@ const deleteMember = async (
     }
 };
 
-const deleteFee = async(
+const deleteFee = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
@@ -710,6 +711,30 @@ const addEvent = async (
     }
 };
 
+const findDeletableMembers = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        const params = [req.query.id, req.query.id];
+        const conn = await pool.getConnection();
+        try {
+            const members = await conn.query("SELECT distinct member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) year_joined from member m where member_id in (select member_id from organization_has_member where organization_id = ?)", params);
+            // console.log(members);
+            res.json({ members });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: `Internal Server Error` });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 const addFee = async (
     req: express.Request,
     res: express.Response,
@@ -722,10 +747,10 @@ const addFee = async (
     params.push(req.body.fee_amount);
     params.push(req.body.due_date);
     params.push(req.body.date_paid);
-    
-    if (!req.body.date_paid){
+
+    if (!req.body.date_paid) {
         params.push("Unpaid");
-    } else if (new Date(req.body.date_paid) > new Date(req.body.due_date)){
+    } else if (new Date(req.body.date_paid) > new Date(req.body.due_date)) {
         params.push("Paid Late");
     } else {
         params.push("Paid");
@@ -767,10 +792,10 @@ const updateFee = async (
     params.push(req.body.fee_amount);
     params.push(req.body.due_date);
     params.push(req.body.date_paid);
-    
-    if (!req.body.date_paid){
+
+    if (!req.body.date_paid) {
         params.push("Unpaid");
-    } else if (new Date(req.body.date_paid) > new Date(req.body.due_date)){
+    } else if (new Date(req.body.date_paid) > new Date(req.body.due_date)) {
         params.push("Paid Late");
     } else {
         params.push("Paid");
@@ -966,4 +991,4 @@ const getFees = async (
     }
 };
 
-export { getMembers, findEligibleMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees, updateFee, deleteFee };
+export { getMembers, findDeletableMembers, findEligibleMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees, updateFee, deleteFee };
