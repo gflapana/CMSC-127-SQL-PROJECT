@@ -98,7 +98,7 @@ const findEligibleMembers = async (
         const params = [req.query.id];
         const conn = await pool.getConnection();
         try {
-            const members = await conn.query("SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) year_joined from member m",params);
+            const members = await conn.query("SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) year_joined from member m", params);
             // console.log(members);
             res.json({ members });
         } catch (err) {
@@ -579,22 +579,13 @@ const deleteMember = async (
     res: express.Response,
     next: express.NextFunction
 ) => {
-    let query = `DELETE FROM organization_has_member WHERE member_id=?;
-DELETE FROM fee WHERE member_id=?;
-DELETE FROM member WHERE member_id=?;`;
 
-    let params: string[] = [];
-    if (req.body.member_id && typeof req.body.member_id == 'number') {
-        params.push(req.body.member_id);
-        params.push(req.body.member_id);
-        params.push(req.body.member_id);
-    }
-
-    console.log(params);
     try {
         const conn = await pool.getConnection();
         try {
-            await conn.query(query, params);
+            await conn.query(`DELETE FROM organization_has_member WHERE member_id=${req.body.id}`);
+            await conn.query(`DELETE FROM fee WHERE member_id=${req.body.id}`);
+            await conn.query(`DELETE FROM member WHERE member_id=${req.body.id}`);
             res.json({ status: "success" });
         } catch (err) {
             console.error(err);
@@ -830,7 +821,7 @@ const getFees = async (
                     conditions.push('date_paid > due_date');
                     break;
                 default:
-                    res.status(400).json({error: "Incorrect payment status"});
+                    res.status(400).json({ error: "Incorrect payment status" });
             }
         }
 
