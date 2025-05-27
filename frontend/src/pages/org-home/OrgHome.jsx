@@ -140,7 +140,7 @@ const OrgHome = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left mx-auto">
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
                                     <p className="text-gray-600 font-semibold">Organization ID:</p>
-                                    <p className="text-gray-800">{user?.id || "N/A"}</p>
+                                    <p className="text-gray-800">{user?.organization_id || "N/A"}</p>
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-lg shadow">
                                     <p className="text-gray-600 font-semibold">Organization Type:</p>

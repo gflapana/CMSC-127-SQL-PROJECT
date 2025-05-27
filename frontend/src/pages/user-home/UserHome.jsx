@@ -82,7 +82,7 @@ const UserHome = () => {
                             {myOrgs.length === 0 ? (
                                     <tr>
                                         <td colSpan={11} className="text-center py-4 text-gray-400">
-                                            No members found.
+                                            No orgs found.
                                         </td>
                                     </tr>
                                 ) : (

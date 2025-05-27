@@ -10,7 +10,7 @@ const MemberSignUp = () => {
         lastName: "",
         degree: "",
         sex: "",
-        batch: "",
+        batch: 0,
         username: "",
         password: ""
     })
@@ -21,7 +21,7 @@ const MemberSignUp = () => {
         lastName: "",
         degree: "",
         sex: "",
-        batch: "",
+        batch: 0,
         username: "",
         password: ""
     });
@@ -39,14 +39,24 @@ const MemberSignUp = () => {
 
 
         try {
-            const orgSignIn = await api.post(`auth/signUpAsMember`, {
-
+            const userSignIn = await api.post(`auth/signUpAsMember`, {
+                first_name: inputs.firstName,
+                middle_name: inputs.middleName,
+                last_name: inputs.lastName,
+                sex: inputs.sex,
+                degree_program: inputs.degree,
+                batch: inputs.batch,
+                username: inputs.username,
+                password: inputs.password
             })
-
+            if (userSignIn.data.status === "success") {
+                navigate('/log-in', { replace: true });
+            }
+            console.log("Member Sign Up Response:", userSignIn.data);
         } catch (error) {
             console.error("Sign up failed");
             alert("Sign up failed: Username already exists");
-            console.error("Error during organization sign up:", error);
+            console.error("Error during member sign up:", error);
         }
 
     };
@@ -113,7 +123,7 @@ const MemberSignUp = () => {
                         <option value="Other">Other</option>
                     </select>
                     <input
-                        type="text"
+                        type="number"
                         name="batch"
                         placeholder="University Batch"
                         value={inputs.batch}

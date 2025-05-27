@@ -41,11 +41,9 @@ const OrgSignUp = () => {
                 password: inputs.password
             });
             if (orgSignIn.data.status === "success") {
-                // Redirect to organization home page after successful sign up
                 navigate('/log-in', { replace: true });
             }
             else {
-                // Handle error case, e.g., show a message to the user
                 console.error("Sign up failed:", orgSignIn.data.message);
                 alert("Sign up failed: " + orgSignIn.data.message);
             }
