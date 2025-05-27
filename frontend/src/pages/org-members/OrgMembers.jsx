@@ -15,7 +15,7 @@ const OrgMembers = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const [tableView, setTableView] = useState("viewall"); // NEW
+    const [tableView, setTableView] = useState("viewall"); 
     const [semester, setSemester] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
