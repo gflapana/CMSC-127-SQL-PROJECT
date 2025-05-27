@@ -26,12 +26,10 @@ const LogIn = () => {
                 type: role
             });
             if (response.data && response.data.user) {
-                if (role === "organization") {
-                    console.log(response.data.user, "logged in successfully");
-                    setAuth({ user: response.data.user, role: role });
-                    localStorage.setItem('auth', JSON.stringify({ user: response.data.user.organization_id, role: role }));
-                }
 
+
+                setAuth({ user: response.data.user, role: role });
+                localStorage.setItem('auth', JSON.stringify({ user: response.data.user.organization_id, role: role }));
 
                 setSuccess(true);
                 setError("");
