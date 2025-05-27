@@ -1,6 +1,7 @@
 import React from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
+import DropdownWithTable from "../../components/DropDownWithTable.jsx";
 
 const OrgFees = () => {
     const { auth, setAuth } = useAuth();
@@ -16,6 +17,7 @@ const OrgFees = () => {
                 <p className="text-gray-700">
                     Here you can view and manage your organization's fees.
                 </p>
+                <DropdownWithTable />
             </div>
         </div>
     );
