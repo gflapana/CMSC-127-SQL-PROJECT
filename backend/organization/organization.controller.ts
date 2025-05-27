@@ -9,7 +9,7 @@ const getMembers = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, committee, committee_role, academic_year from member natural join organization_has_member";
+        let query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, batch, degree_program, committee, committee_role, academic_year from member natural join organization_has_member";
         const conditions: string[] = [];
         const params: (string | number)[] = [];
         let order: string | null = null;
