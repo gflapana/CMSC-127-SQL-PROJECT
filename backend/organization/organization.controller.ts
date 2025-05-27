@@ -89,22 +89,21 @@ const getMembers = async (
     }
 };
 
-const findEligibleMember = async (
+const findEligibleMembers = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
 ) => {
     try {
-        const query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) from member m";
         const params = [req.query.id];
         const conn = await pool.getConnection();
         try {
-            const members = await conn.query(query,params);
+            const members = await conn.query("SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch, (select distinct year_joined from organization_has_member ohm where organization_id = ? AND ohm.member_id = m.member_id) year_joined from member m",params);
             // console.log(members);
             res.json({ members });
         } catch (err) {
             console.error(err);
-            res.status(500).json({ error: `Internal Server Error: ${err}` });
+            res.status(500).json({ error: `Internal Server Error` });
         } finally {
             conn.release();
         }
@@ -409,8 +408,8 @@ ON m.member_id = ohm.member_id
 WHERE ohm.member_status = 'alumni' 
   AND o.organization_id = ? 
   AND (
-      (MONTH(?) BETWEEN 8 AND 12 AND ohm.semester = '1st Semester') OR
-      (MONTH(?) BETWEEN 1 AND 7 AND ohm.semester = '2nd Semester')
+      (MONTH(?) BETWEEN 8 AND 12 AND (LEFT(ohm.academic_year,4) < YEAR(?) OR  (LEFT(ohm.academic_year,4) = YEAR(?) AND ohm.semester = '1st Semester'))) OR
+      (MONTH(?) BETWEEN 1 AND 7 AND RIGHT(ohm.academic_year,4) <= YEAR(?))
   );`;
         const params: (string | number)[] = [];
 
@@ -786,7 +785,7 @@ const getFees = async (
     next: express.NextFunction
 ) => {
     try {
-        let query = "SELECT fee_id, member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, semester, academic_year from member natural join fee";
+        let query = "SELECT fee_id, member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, fee_amount, due_date, date_paid, payment_status, semester, academic_year from member natural join fee";
         const conditions: string[] = [];
         const params: (string | number | null)[] = [];
         let order: string | null = null;
@@ -816,20 +815,39 @@ const getFees = async (
             params.push(req.query.date_paid);
         }
 
+        if (req.query.payment_status && typeof req.query.payment_status == 'string') {
+            conditions.push(`payment_status like '%${req.query.payment_status}%'`);
+        }
+
         if (req.query.semester && typeof req.query.semester == 'string') {
-            conditions.push(`semester like '%${req.query.semester}'`);
+            conditions.push(`semester like '%${req.query.semester}%'`);
         }
 
         if (req.query.academic_year && typeof req.query.academic_year == 'string') {
             conditions.push('academic_year =  ?');
             params.push(req.query.academic_year);
         }
+        if (req.query.order && typeof req.query.order == 'string') {
+            order = ` ORDER BY ${req.query.order}`;
+        }
+
+        if (req.query.desc && req.query.desc == 'true') {
+            order += " DESC";
+        }
+        if (conditions.length != 0) {
+            query += " WHERE " + conditions.join(' AND ');
+        }
+
+        if (order) {
+            query += order;
+        }
 
         console.log(params);
         const conn = await pool.getConnection();
         try {
-            await conn.query(query, params);
-            res.json({ status: "success" });
+            console.log(query);
+            const fees = await conn.query(query, params);
+            res.json({ fees });
         } catch (err) {
             console.error(err);
             res.status(500).json({ error: 'Internal Server Error' });
@@ -843,4 +861,4 @@ const getFees = async (
     }
 };
 
-export { getMembers, findEligibleMember, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees };
+export { getMembers, findEligibleMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees };
