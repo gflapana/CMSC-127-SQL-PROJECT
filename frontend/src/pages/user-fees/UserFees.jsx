@@ -2,7 +2,8 @@ import React from "react";
 import UserNavBar from "../../components/UserNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import { useState, useEffect } from "react";
-import api from "../../api/axios.js";   
+import api from "../../api/axios.js";
+import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
 
 const UserFees = () => {
 
@@ -14,12 +15,13 @@ const UserFees = () => {
     console.log("Home Auth:", auth.user);
 
     const [myFees, setMyFees] = useState([]);
+    const [selectedFilter, setSelectedFilter] = useState("");
 
     useEffect(() => {
         const fetchMyFees = async () => {
             try {
                 const getmyFees = await api.get(
-                    `organization/getFees/?member_id=${id}`);
+                    `organization/getFees/?member_id=${id}&payment_status=${selectedFilter}`);
                 setMyFees(getmyFees.data.fees);
                 console.log("My Fees:", getmyFees.data.fees);
             } catch (error) {
@@ -28,7 +30,9 @@ const UserFees = () => {
         }
 
         fetchMyFees();
-    }, [id]);
+    }, [id, selectedFilter]);
+
+    const handleSelectChange = (e) => setSelectedFilter(e.target.value);
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -58,6 +62,19 @@ const UserFees = () => {
 
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                         <div className="flex items-center gap-2 w-full md:w-auto">
+                            <div className="relative">
+                                <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <select
+                                    onChange={handleSelectChange}
+                                    className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
+                                    defaultValue=""
+                                >
+                                    <option value="">All Status</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Unpaid">Unpaid</option>
+                                    <option value="Paid Late">Paid Late</option>
+                                </select>
+                            </div>
                             {/* <div className="relative">
                                 <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                 <select
@@ -88,6 +105,7 @@ const UserFees = () => {
                                 </form> */}
                         </div>
                         <div className="flex items-center gap-2 w-full md:w-auto">
+
                             {/* <div className="relative">
                                 <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                                 <select
@@ -119,7 +137,59 @@ const UserFees = () => {
                         </div>
                     </div>
 
-
+                    <table className="text-sm border-collapse mx-auto w-full">
+                        <thead className="bg-gray-100">
+                            <tr>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Organization</th>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee ID</th>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Fee Amount</th>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Due Date</th>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Date Paid</th>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Payment Status</th>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
+                                <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">A.Y.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {myFees.length === 0 ? (
+                                <tr>
+                                    <td colSpan={11} className="text-center py-4 text-gray-400">
+                                        No members found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                myFees.map((member, idx) => (
+                                    <tr key={member.id || idx}>
+                                        <td className="px-3 py-2">{member.fee_id}</td>
+                                        <td className="px-3 py-2">{member.fee_id}</td>
+                                        <td className="px-3 py-2">{member.fee_amount}</td>
+                                        <td className="px-3 py-2">
+                                            {member.due_date
+                                                ? new Date(member.due_date).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })
+                                                : ""}
+                                        </td>
+                                        <td className="px-3 py-2">
+                                            {member.date_paid
+                                                ? new Date(member.date_paid).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
+                                                })
+                                                : <span className="italic">null</span>
+                                            }
+                                        </td>
+                                        <td className="px-3 py-2">{member.payment_status}</td>
+                                        <td className="px-3 py-2">{member.semester}</td>
+                                        <td className="px-3 py-2">{member.academic_year}</td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                     <div>
 
                     </div>
