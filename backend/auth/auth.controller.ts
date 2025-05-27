@@ -84,5 +84,46 @@ const signUpAsMember = async (
     }
 }
 
+const signUpAsOrganization = async(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        const query = "INSERT INTO organization (organization_name, organization_type, date_established, years_active, organization_username, organization_password) VALUES (?,?,?,YEAR(CURDATE())-?,?,SHA2(?,0))";
+        let params: string[] = [];
 
-export { signIn, signUpAsMember };
+        params.push(req.body.organization_name);
+        params.push(req.body.organization_type);
+        params.push(req.body.date_established);
+        params.push(req.body.date_established);
+        params.push(req.body.username);
+        params.push(req.body.password);
+
+
+        const conn = await pool.getConnection();
+        try {
+            const checker = await conn.query("SELECT * from organization where organization_username = ?", [req.body.username]);
+            if (checker[0] != null) {
+                res.status(400).json({ status: "taken" });
+                return;
+            }
+            await conn.query(query, params);
+            
+            const userQuery = await conn.query("SELECT organization_id, organization_name, organization_type, date_established, years_active from organization WHERE organization_username = ?", [req.body.username]);
+            const user = userQuery[0];
+            res.json({ status: "success", user });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+export { signIn, signUpAsMember, signUpAsOrganization };
