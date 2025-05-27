@@ -17,6 +17,9 @@ import EditMember from "./pages/org-members/EditMember";
 import UserHome from "./pages/user-home/UserHome";
 import UserFees from "./pages/user-fees/UserFees";
 import UserProfile from "./pages/user-profile/UserProfile";
+import AddFee from "./pages/org-fees/AddFee";
+import DeleteFee from "./pages/org-fees/DeleteFee";
+import UpdateFee from "./pages/org-fees/UpdateFee";
 
 function App() {
   const routes = [
@@ -53,6 +56,30 @@ function App() {
       element: (
         <RequireAuth allowedRole="member">
           <UserFees />
+        </RequireAuth>
+      )
+    },
+    {
+      path: "/add-fee",
+      element: (
+        <RequireAuth allowedRole="organization">
+          <AddFee />
+        </RequireAuth>
+      )
+    },
+    {
+      path: "/update-fee",
+      element: (
+        <RequireAuth allowedRole="organization">
+          <UpdateFee />
+        </RequireAuth>
+      )
+    },
+    {
+      path: "/delete-fee",
+      element: (
+        <RequireAuth allowedRole="organization">
+          <DeleteFee />
         </RequireAuth>
       )
     },
