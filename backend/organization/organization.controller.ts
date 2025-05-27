@@ -423,7 +423,6 @@ WHERE ohm.member_status = 'alumni'
             params.push(req.query.date);
             params.push(req.query.date);
             params.push(req.query.date);
-            
         }
         const conn = await pool.getConnection();
         try {
@@ -820,7 +819,19 @@ const getFees = async (
         }
 
         if (req.query.payment_status && typeof req.query.payment_status == 'string') {
-            conditions.push(`payment_status like '%${req.query.payment_status}%'`);
+            switch (req.query.payment_status.toLowerCase()) {
+                case 'paid':
+                    conditions.push('date_paid <= due_date');
+                    break;
+                case 'unpaid':
+                    conditions.push('date_paid IS NULL');
+                    break;
+                case 'paid late':
+                    conditions.push('date_paid > due_date');
+                    break;
+                default:
+                    res.status(400).json({error: "Incorrect payment status"});
+            }
         }
 
         if (req.query.semester && typeof req.query.semester == 'string') {
