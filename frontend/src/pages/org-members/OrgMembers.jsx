@@ -81,9 +81,9 @@ const OrgMembers = () => {
                                 <select
                                     onChange={handleSelectChange}
                                     className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                    defaultValue="degree"
+                                    defaultValue="committee_role"
                                 >
-                                    <option value="degree">Role</option>
+                                    <option value="role">Academic Year</option>
                                     <option value="status">Status</option>
                                     <option value="sex">Sex</option>
                                     <option value="degree_program">Degree Program</option>
@@ -115,14 +115,9 @@ const OrgMembers = () => {
                                 <select
                                     onChange={handleSelectChange}
                                     className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                    defaultValue="degree"
+                                    defaultValue="semester"
                                 >
-                                    <option value="degree">Role</option>
-                                    <option value="status">Status</option>
-                                    <option value="sex">Sex</option>
-                                    <option value="degree_program">Degree Program</option>
-                                    <option value="batch">Batch</option>
-                                    <option value="committee_role">Committee</option>
+                                    <option value="semester">Semester</option>
                                 </select>
                             </div>
                             <div className="relative">
@@ -130,14 +125,9 @@ const OrgMembers = () => {
                                 <select
                                     onChange={handleSelectChange}
                                     className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                    defaultValue="degree"
+                                    defaultValue="role"
                                 >
-                                    <option value="degree">Role</option>
-                                    <option value="status">Status</option>
-                                    <option value="sex">Sex</option>
-                                    <option value="degree_program">Degree Program</option>
-                                    <option value="batch">Batch</option>
-                                    <option value="committee_role">Committee</option>
+                                    <option value="acadyear">Academic Year</option>
                                 </select>
                             </div>
                         </div>
@@ -145,18 +135,21 @@ const OrgMembers = () => {
                     </div>
                     {/* Table */}
                     <div className="">
-                        <table className="text-sm border-collapse mx-auto min-w-full">
+                        <table className="text-sm border-collapse mx-auto">
                             <thead className="bg-gray-100">
                                 <tr>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Sex</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Degree Program</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">University Batch</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Committee</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Committee Role</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Status</th>
-                                    <th className="px-6 py-3 font-normal text-left whitespace-nowrap w-auto">Academic Year Joined</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">ID</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Name</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Sex</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Degree Program</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Univ Batch</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Org Batch</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Committee</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Committee Role</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Status</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Semester</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">A.Y.</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -169,15 +162,17 @@ const OrgMembers = () => {
                                 ) : (
                                     members.map((member, idx) => (
                                         <tr key={member.id || idx}>
-                                            <td className="px-6 py-2">{member.member_id}</td>
-                                            <td className="px-6 py-2">{member.first_name + " " + member.last_name}</td>
-                                            <td className="px-6 py-2">{member.sex}</td>
-                                            <td className="px-6 py-2">{member.degree_program}</td>
-                                            <td className="px-6 py-2">{member.batch}</td>
-                                            <td className="px-6 py-2">{member.committee}</td>
-                                            <td className="px-6 py-2">{member.committee_role}</td>
-                                            <td className="px-6 py-2">{member.status}</td>
-                                            <td className="px-6 py-2">{member.academic_year}</td>
+                                            <td className="px-3 py-2">{member.member_id}</td>
+                                            <td className="px-3 py-2">{member.first_name + " " + member.last_name}</td>
+                                            <td className="px-3 py-2">{member.sex}</td>
+                                            <td className="px-3 py-2">{member.degree_program}</td>
+                                            <td className="px-3 py-2">{member.batch}</td>
+                                            <td className="px-3 py-2">{member.batch}</td>
+                                            <td className="px-3 py-2">{member.committee}</td>
+                                            <td className="px-3 py-2">{member.committee_role}</td>
+                                            <td className="px-3 py-2">{member.status}</td>
+                                            <td className="px-3 py-2">{member.academic_year}</td>
+                                            <td className="px-3 py-2">{member.academic_year}</td>
                                         </tr>
                                     ))
                                 )}
