@@ -622,6 +622,30 @@ const deleteMember = async (
     }
 };
 
+const deleteFee = async(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(`DELETE FROM fee WHERE member_id=${req.body.member_id} AND organization_id = ${req.body.id} AND semester = ${req.body.semester} AND academic_year = ${req.body.academic_year}`);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+};
 const deleteEvent = async (
     req: express.Request,
     res: express.Response,
@@ -942,4 +966,4 @@ const getFees = async (
     }
 };
 
-export { getMembers, findEligibleMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees, updateFee };
+export { getMembers, findEligibleMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization, updateMemberToOrganization, getFees, updateFee, deleteFee };
