@@ -95,9 +95,9 @@ const UpdateFee = () => {
             date_paid: member.date_paid || "",
             semester: member.semester || "",
             academic_year: member.academic_year || "",
-            id: member.id,
+            id: member.organization_id,
             member_id: member.member_id
-        })
+        });
     }
 
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
@@ -256,7 +256,7 @@ const UpdateFee = () => {
                                                 <td className="px-3 py-2">{member.academic_year}</td>
                                                 <td className="px-3 py-2">
                                                     <button
-                                                        // onClick={() => handleEditClick(member)}
+                                                        onClick={() => handleEditClick(member)}
                                                         className="text-blue-500 hover:text-blue-700"
                                                         aria-label={`Edit member ${member.first_name} ${member.last_name}`}
                                                     >
