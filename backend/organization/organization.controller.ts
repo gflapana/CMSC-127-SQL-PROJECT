@@ -52,7 +52,7 @@ const getMembers = async (
             conditions.push('semester = ?');
             params.push(req.query.semester);
         }
-        
+
         if (req.query.order && typeof req.query.order == 'string') {
             order = ` ORDER BY ${req.query.order}`;
         }
@@ -685,7 +685,7 @@ const addFee = async (
     params.push(req.body.payment_status);
     params.push(req.body.semester);
     params.push(req.body.academic_year);
-    params.push(req.body.organization_id);
+    params.push(req.body.id);
     params.push(req.body.member_id);
 
     console.log(params);
@@ -707,4 +707,40 @@ const addFee = async (
     }
 };
 
-export { getMembers, findEligibleMember ,getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee };
+const addMemberToOrganization = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    let query = "INSERT INTO organization_has_member(organization_id, member_id,year_joined, committee, committee_role, member_status, academic_year, semester) VALUES (?,?,?,?,?,?,?,?)";
+    let params: (string | number | null)[] = [];
+
+    params.push(req.body.id);
+    params.push(req.body.member_id);
+    params.push(req.body.year_joined);
+    params.push(req.body.committee);
+    params.push(req.body.committee_role);
+    params.push(req.body.member_status);
+    params.push(req.body.academic_year);
+    params.push(req.body.semester);
+
+    console.log(params);
+    try {
+        const conn = await pool.getConnection();
+        try {
+            await conn.query(query, params);
+            res.json({ status: "success" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export { getMembers, findEligibleMember, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee, addMemberToOrganization };
