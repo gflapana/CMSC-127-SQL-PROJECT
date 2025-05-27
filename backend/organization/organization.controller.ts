@@ -793,7 +793,7 @@ const updateFee = async (
     params.push(req.body.due_date);
     params.push(req.body.date_paid);
 
-    if (!req.body.date_paid) {
+    if (!req.body.date_paid || req.body.date_paid == '') {
         params.push("Unpaid");
     } else if (new Date(req.body.date_paid) > new Date(req.body.due_date)) {
         params.push("Paid Late");
