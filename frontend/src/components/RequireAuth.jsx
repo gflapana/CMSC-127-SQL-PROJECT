@@ -8,7 +8,7 @@ const RequireAuth = ({ children, allowedRole }) => {
 
     // If not logged in, redirect to login
     if (!auth?.user) {
-        return <Navigate to="/log-in" state={{ from: location }} replace />;
+        return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     // Logged in but wrong role
