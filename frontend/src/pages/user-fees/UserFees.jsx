@@ -47,17 +47,6 @@ const UserFees = () => {
                     </div>
                     {/* Table View Selector and Sort */}
                     <div className="flex flex-row justify-between gap-4 mb-6">
-                        {/* <div className="relative">
-                            <ArrowDown className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                            <select
-                                onChange={handleTableChange}
-                                className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                value={tableView}
-                            >
-                                <option value="viewall">View All</option>
-                                <option value="statusreport">Status Report</option>
-                            </select>
-                        </div> */}
                     </div>
 
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -75,68 +64,8 @@ const UserFees = () => {
                                     <option value="Paid Late">Paid Late</option>
                                 </select>
                             </div>
-                            {/* <div className="relative">
-                                <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                <select
-                                    onChange={handleSelectChange}
-                                    className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                    defaultValue=""
-                                >
-                                    <option value="">All Status</option>
-                                    <option value="Paid">Paid</option>
-                                    <option value="Unpaid">Unpaid</option>
-                                    <option value="Paid Late">Paid Late</option>
-                                </select>
-                            </div> */}
-                            {/* <form onSubmit={handleSearchSubmit} className="flex w-full md:w-auto">
-                                    <input
-                                        type="text"
-                                        placeholder="Search..."
-                                        value={searchInput}
-                                        onChange={(e) => setSearchInput(e.target.value)}
-                                        className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-r"
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                                    >
-                                        Search
-                                    </button>
-                                </form> */}
-                        </div>
-                        <div className="flex items-center gap-2 w-full md:w-auto">
-
-                            {/* <div className="relative">
-                                <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                                <select
-                                    onChange={handleSemChange}
-                                    className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                    defaultValue=""
-                                >
-                                    <option value="">All semester</option>
-                                    <option value="1st Semester">1st semester</option>
-                                    <option value="2nd Semester">2nd semester</option>
-                                </select>
-                            </div>
-                            <form onSubmit={handleAcadYearSubmit} className="flex w-full md:w-auto">
-                                <input
-                                    type="text"
-                                    placeholder="Search A.Y."
-                                    value={acadYearInput}
-                                    onChange={(e) => setAcadYearInput(e.target.value)}
-                                    className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-40 rounded-l"
-                                />
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600"
-                                >
-                                    Search
-                                </button>
-                            </form> */}
-
                         </div>
                     </div>
-
                     <table className="text-sm border-collapse mx-auto w-full">
                         <thead className="bg-gray-100">
                             <tr>
