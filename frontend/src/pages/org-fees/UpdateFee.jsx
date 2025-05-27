@@ -136,6 +136,9 @@ const UpdateFee = () => {
                             Here you can view and manage your organization's fee.
                         </p>
                     </div>
+
+                    
+
                     {/* Table View Selector and Sort */}
                     <div className="flex flex-row justify-between gap-4 mb-6">
                         <div className="relative">
