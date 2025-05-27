@@ -507,10 +507,14 @@ FROM (
             params.push(req.query.id);
         }
 
-        if ( req.query.semester && typeof req.query.semester == 'string' && req.query.academic_year && typeof req.query.academic_year == 'string') {
-            query += ` AND f.academic_year = ?
-      AND f.semester = ? `;
+        if ( req.query.academic_year && typeof req.query.academic_year == 'string') {
+            query += ` AND f.academic_year = ? `;
             params.push(req.query.academic_year);
+            
+        }
+
+        if (req.query.semester && typeof req.query.semester == 'string'){
+            query += ' AND f.semester = ? ';
             params.push(req.query.semester);
         }
 
@@ -529,10 +533,14 @@ WHERE total_debt = (SELECT MAX(total_debt)
             params.push(req.query.id);
         }
 
-        if (req.query.semester && typeof req.query.semester == 'string' && req.query.academic_year && typeof req.query.academic_year == 'string') {
-            query += ` AND f.academic_year = ?
-                          AND f.semester = ? `
+        if ( req.query.academic_year && typeof req.query.academic_year == 'string') {
+            query += ` AND f.academic_year = ? `;
             params.push(req.query.academic_year);
+            
+        }
+
+        if (req.query.semester && typeof req.query.semester == 'string'){
+            query += ' AND f.semester = ? ';
             params.push(req.query.semester);
         }
 
