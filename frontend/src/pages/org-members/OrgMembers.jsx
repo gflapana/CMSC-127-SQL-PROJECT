@@ -1,12 +1,11 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
 import { ChartBar, Menu, ArrowDown } from 'lucide-react';
 
 const OrgMembers = () => {
-    const { auth } = useAuth();
-
+    const { auth, setAuth } = useAuth();
     const [members, setMembers] = useState([]);
     const [percentageMems, setPercentageMems] = useState([]);
     const [alumni, setAlumni] = useState([]);
@@ -15,23 +14,29 @@ const OrgMembers = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const [tableView, setTableView] = useState("viewall"); 
+    const [tableView, setTableView] = useState("viewall");
     const [semester, setSemester] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
-    const [pastSemesters, setPastSemesters] = useState("");
+    const [pastSemesters, setPastSemesters] = useState(0);
     const [dateQuery, setDateQuery] = useState("");
     const [dateInput, setDateInput] = useState("");
 
     const org = auth?.user;
     const id = org.organization_id;
-
+    console.log("Members Organization ID:", id);
 
     useEffect(() => {
         setSortOrder("asc");
         setSearchQuery("");
         setSearchInput("");
         setSemester("");
+        setAcadYearInput("");
+        setAcadYearQuery("");
+        setPastSemesters(0);
+        setDateQuery("");
+        setDateInput("");
+        setFilterSort("committee_role");
     }, [selectedFilter, tableView]);
 
     useEffect(() => {
@@ -46,7 +51,7 @@ const OrgMembers = () => {
             }
         };
         getAllMembersFiltered();
-    }, [id, selectedFilter, sortOrder, searchQuery, acadYearQuery, semester, filterSort, tableView]);
+    }, [id, selectedFilter, sortOrder, searchQuery, acadYearQuery, semester, filterSort]);
 
     useEffect(() => {
         const getMemPercentage = async () => {
@@ -64,17 +69,16 @@ const OrgMembers = () => {
 
     useEffect(() => {
         const getAllAlumni = async () => {
-            try{
+            try {
                 const allAlumni = await api.get(`/organization/getAlumni?id=${id}&date=${dateQuery}`);
-                setMembers(Array.isArray(allAlumni.data.members) ? allAlumni.data.members : []);
                 setAlumni(Array.isArray(allAlumni.data.alumni) ? allAlumni.data.alumni : []);
                 console.log("Alumni Data:", allAlumni.data.alumni);
             } catch (error) {
                 console.error("Error fetching alumni:", error);
             }
-        } 
+        }
         getAllAlumni();
-    },[dateQuery, id]);
+    }, [dateQuery, id]);
 
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
     const handleFilterSortChange = (e) => setFilterSort(e.target.value);
@@ -282,7 +286,7 @@ const OrgMembers = () => {
                         ) : (
                             <div className="flex gap-6">
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-1/3">
-                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Inactive and Active Count</h2>
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Inactive and Active Percentage Count</h2>
                                     {/* Search bar for "How many semesters from now?" without form and submit button */}
                                     <input
                                         type="number"
@@ -301,6 +305,8 @@ const OrgMembers = () => {
                                     </p>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg shadow p-6 w-2/3 overflow-x-auto">
+                                    <h2 className="text-lg font-semibold mb-4 text-blue-600">Search Alumni based on Date </h2>
+
                                     <form
                                         onSubmit={e => {
                                             e.preventDefault();
@@ -310,7 +316,7 @@ const OrgMembers = () => {
                                     >
                                         <input
                                             type="text"
-                                            placeholder="Search by date..."
+                                            placeholder="YYYY-MM-DD"
                                             value={dateInput}
                                             onChange={e => setDateInput(e.target.value)}
                                             className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"

@@ -40,6 +40,22 @@ const OrgFees = () => {
         getMemFees();
     }, [id, acadYearQuery, semester, selectedFilter, tableView])
 
+    useEffect(() => {
+        const getOrgFees = async () => {
+            try {
+                console.log("Fetching total fees for organization ID:", id);
+                const getAllFees = await api.get(
+                    `organization/getTotalFees/?id=${id}&date=${dateQuery}`
+                );
+                console.log("Total Fees Response:", getAllFees.data);
+            } catch (error) {
+                console.error("Error fetching total fees:", error);
+            }
+        }
+
+        getOrgFees();
+    }, [id, dateQuery]);
+
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
 
 
@@ -226,7 +242,7 @@ const OrgFees = () => {
                                                         })
                                                         : ""}
                                                 </td>
-                                                <td className="px-3 py-2">
+                                                <td className="px-3 py-2 italic">
                                                     {member.date_paid
                                                         ? new Date(member.date_paid).toLocaleDateString('en-US', {
                                                             year: 'numeric',
@@ -256,7 +272,7 @@ const OrgFees = () => {
                                     >
                                         <input
                                             type="text"
-                                            placeholder="Search by date..."
+                                            placeholder="YYYY-MM-DD"
                                             value={dateInput}
                                             onChange={e => setDateInput(e.target.value)}
                                             className="border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full md:w-48 rounded-l"
