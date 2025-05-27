@@ -584,10 +584,10 @@ DELETE FROM fee WHERE member_id=?;
 DELETE FROM member WHERE member_id=?;`;
 
     let params: string[] = [];
-    if (req.body.id && typeof req.body.id == 'number') {
-        params.push(req.body.id);
-        params.push(req.body.id);
-        params.push(req.body.id);
+    if (req.body.member_id && typeof req.body.member_id == 'number') {
+        params.push(req.body.member_id);
+        params.push(req.body.member_id);
+        params.push(req.body.member_id);
     }
 
     console.log(params);
