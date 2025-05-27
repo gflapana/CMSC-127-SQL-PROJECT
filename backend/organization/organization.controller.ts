@@ -785,7 +785,7 @@ const updateFee = async (
     res: express.Response,
     next: express.NextFunction
 ) => {
-    let query = "UPDATE fee SET fee_amount = ?, due_date = ?, date_paid = ?, payment_status = ? WHERE semester = ? AND academic_year = ? AND organization_id = ? AND member_id = ?";
+    let query = "UPDATE fee SET fee_amount = ?, due_date = ?, date_paid = ?, payment_status = ? WHERE semester = ? AND academic_year = ? AND organization_id = ? AND member_id = ? AND fee_id = ?";
 
     let params: (string | number | null)[] = [];
 
@@ -805,6 +805,7 @@ const updateFee = async (
     params.push(req.body.academic_year);
     params.push(req.body.id);
     params.push(req.body.member_id);
+    params.push(req.body.fee_id);
 
     console.log(params);
     try {
