@@ -8,10 +8,11 @@ const AddMember = () => {
 
     const { auth } = useAuth();
     const [eligibleMembers, setEligibleMembers] = useState([]);
+    const [isHidden, setIsHidden] = useState(true);
     const [memberData, setMemberData] = useState({
-        id: 0,
-        member_id: 0,
-        year_joined: 2025,
+        id: "",
+        member_id: "",
+        year_joined: "",
         committee: '',
         committee_role: '',
         member_status: '',
@@ -43,9 +44,19 @@ const AddMember = () => {
     };
 
     const addMember = async () => {
-        const payload = { ...memberData, id };
-        console.log(`Member Data: ${payload}`);
-        await api.post(`/organization/addMemberToOrganization`, payload)
+        const finalMemberData = { ...memberData, id };
+        console.log(`Member Data: ${finalMemberData}`);
+        await api.post(`/organization/addMemberToOrganization`, finalMemberData)
+        setMemberData({
+            id: "",
+            member_id: "",
+            year_joined: "",
+            committee: '',
+            committee_role: '',
+            member_status: '',
+            academic_year: '',
+            semester: ''
+        });
     }
 
     return (
@@ -60,9 +71,20 @@ const AddMember = () => {
                             Here you can add members to your organization.
                         </p>
                     </div>
+                    <div className="m-7">
 
-                    <form onSubmit={addMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto">
-                        <h2 className="text-white text-xl font-semibold mb-4">Add a Member</h2>
+                    </div>
+                    <form onSubmit={addMember} className="bg-blue-600 p-6 rounded-lg shadow-lg max-w-md mx-auto relative">
+                        <h2 className="text-white text-xl font-semibold mb-4"> {isHidden ? `Insert New Member` : "Insert Membership Information"}</h2>
+                        <button
+                            className={`absolute top-4 right-4 w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300 hover:cursor-pointer ${isHidden ? 'bg-white' : 'bg-gray-200'}`}
+                            onClick={() => setIsHidden((prev) => !prev)}
+                            type="button"
+                        >
+                            <span
+                                className={`bg-[#7F8CAA] w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${isHidden ? 'translate-x-6' : ''}`}
+                            />
+                        </button>
                         <div className="grid grid-cols-1 gap-4">
 
                             <input
@@ -115,14 +137,14 @@ const AddMember = () => {
                                 placeholder="Status"
                                 className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
                             />
-                            <input
+                            {isHidden ? <input
                                 type="number"
                                 name="year_joined"
                                 value={memberData.year_joined}
                                 onChange={handleChange}
                                 placeholder="Year Joined"
                                 className="w-full px-4 py-2 rounded-lg bg-white text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                            />
+                            /> : <></>}
                             <button
                                 type="submit"
                                 className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-400 transition-colors duration-200 mt-2"
@@ -131,7 +153,7 @@ const AddMember = () => {
                             </button>
                         </div>
                     </form>
-                    <div className="m-20">
+                    <div className="m-15">
 
                     </div>
                     {/* Table */}
@@ -144,6 +166,7 @@ const AddMember = () => {
                                     <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Sex</th>
                                     <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Degree Program</th>
                                     <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Univ Batch</th>
+                                    <th className="px-3 py-3 font-normal text-left whitespace-nowrap w-auto">Year Joined</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -161,6 +184,7 @@ const AddMember = () => {
                                             <td className="px-3 py-2">{member.sex}</td>
                                             <td className="px-3 py-2">{member.degree_program}</td>
                                             <td className="px-3 py-2">{member.batch}</td>
+                                            <td className="px-3 py-2">{member.year_joined}</td>
                                         </tr>
                                     ))
                                 )}
