@@ -20,37 +20,39 @@ const getMembers = async (
         }
 
         if (req.query.sex && typeof req.query.sex == 'string') {
-            conditions.push('sex = ?');
-            params.push(req.query.sex)
+            conditions.push(`sex like '%${req.query.sex}'`);
         }
 
         if (req.query.degree_program && typeof req.query.degree_program == 'string') {
-            conditions.push('degree_program = ?');
-            params.push(req.query.degree_program);
+            conditions.push(`degree_program like '%${req.query.degree_program}%'`);
         }
         if (req.query.committee && typeof req.query.committee == 'string') {
-            conditions.push('committee = ?');
-            params.push(req.query.committee);
+            conditions.push(`committee like '%${req.query.committee}%'`);
         }
 
-        if (req.query.year_joined && typeof req.query.year_joined == 'string'){
+        if (req.query.year_joined && typeof req.query.year_joined == 'string') {
             conditions.push('year_joined = ?');
             params.push(req.query.year_joined);
         }
 
-        if (req.query.member_status && typeof req.query.member_status == 'string'){
-            conditions.push('member_status = ?');
-            params.push(req.query.member_status);
+
+        if (req.query.member_status && typeof req.query.member_status == 'string') {
+            conditions.push(`member_status like '%${req.query.member_status}%'`);
         }
 
         if (req.query.committee_role && typeof req.query.committee_role == 'string') {
-            conditions.push('committee_role = ?');
-            params.push(req.query.committee_role);
+            conditions.push(`committee_role like '%${req.query.committee_role}%'`);
         }
         if (req.query.academic_year && typeof req.query.academic_year == 'string') {
             conditions.push('academic_year = ?');
             params.push(req.query.academic_year);
         }
+
+        if (req.query.semester && typeof req.query.semester == 'string') {
+            conditions.push('semester = ?');
+            params.push(req.query.semester);
+        }
+        
         if (req.query.order && typeof req.query.order == 'string') {
             order = ` ORDER BY ${req.query.order}`;
         }
@@ -86,6 +88,31 @@ const getMembers = async (
         res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+const findEligibleMember = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) => {
+    try {
+        const query = "SELECT member_id, first_name, IFNULL(middle_name,'') middle_name, last_name, sex, degree_program, batch from member";
+        const conn = await pool.getConnection();
+        try {
+            const members = await conn.query(query);
+            // console.log(members);
+            res.json({ members });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: `Internal Server Error: ${err}` });
+        } finally {
+            conn.release();
+        }
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
 
 
 // queries: id (required), academic_year (required), semester(required), order, desc
@@ -680,4 +707,4 @@ const addFee = async (
     }
 };
 
-export { getMembers, getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee };
+export { getMembers, findEligibleMember ,getUnpaidMembers, getExecutiveMembers, getMembersByRole, getLatePayments, getPercentage, getAlumni, getTotalFees, getHighestDebtor, editDetails, deleteMember, deleteEvent, addEvent, addFee };
