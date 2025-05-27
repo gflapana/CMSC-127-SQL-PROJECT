@@ -1,7 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axios.js";
 
 const OrgSignUp = () => {
+    // Local state for input fields (not the final form state)
+    const [inputs, setInputs] = useState({
+        orgName: "",
+        orgType: "",
+        dateEstablished: "",
+        username: "",
+        password: ""
+    });
+
     const [form, setForm] = useState({
         orgName: "",
         orgType: "",
@@ -12,13 +22,40 @@ const OrgSignUp = () => {
 
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleInputChange = (e) => {
+        setInputs({ ...inputs, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    // Only set the form state on submit
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle sign up logic here
+        setForm({ ...inputs });
+        console.log("Submitted form:", inputs);
+
+        try {
+            const orgSignIn = await api.post(`auth/signUpAsOrganization`, {
+                organization_name: inputs.orgName,
+                organization_type: inputs.orgType,
+                date_established: inputs.dateEstablished,
+                username: inputs.username,
+                password: inputs.password
+            });
+            if (orgSignIn.data.status === "success") {
+                // Redirect to organization home page after successful sign up
+                navigate('/log-in', { replace: true });
+            }
+            else {
+                // Handle error case, e.g., show a message to the user
+                console.error("Sign up failed:", orgSignIn.data.message);
+                alert("Sign up failed: " + orgSignIn.data.message);
+            }
+            console.log("Organization Sign Up Response:", orgSignIn.data);
+        } catch (error) {
+            console.error("Sign up failed");
+            alert("Sign up failed: Username already exists");
+            console.error("Error during organization sign up:", error);
+        }
+
     };
 
     return (
@@ -37,8 +74,8 @@ const OrgSignUp = () => {
                         type="text"
                         name="orgName"
                         placeholder="Organization Name"
-                        value={form.orgName}
-                        onChange={handleChange}
+                        value={inputs.orgName}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
@@ -46,17 +83,19 @@ const OrgSignUp = () => {
                         type="text"
                         name="orgType"
                         placeholder="Organization Type"
-                        value={form.orgType}
-                        onChange={handleChange}
+                        value={inputs.orgType}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
                     <input
-                        type="date"
+                        type="number"
                         name="dateEstablished"
-                        placeholder="Date Established"
-                        value={form.dateEstablished}
-                        onChange={handleChange}
+                        placeholder="Year Established"
+                        min="1900"
+                        max={new Date().getFullYear()}
+                        value={inputs.dateEstablished}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
@@ -64,8 +103,8 @@ const OrgSignUp = () => {
                         type="text"
                         name="username"
                         placeholder="Organization Username (unique)"
-                        value={form.username}
-                        onChange={handleChange}
+                        value={inputs.username}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
@@ -73,8 +112,8 @@ const OrgSignUp = () => {
                         type="password"
                         name="password"
                         placeholder="Organization Password"
-                        value={form.password}
-                        onChange={handleChange}
+                        value={inputs.password}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />

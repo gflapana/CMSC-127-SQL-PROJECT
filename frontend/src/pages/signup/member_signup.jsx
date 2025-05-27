@@ -1,7 +1,20 @@
+import { HandMetal } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axios.js";
 
 const MemberSignUp = () => {
+    const [inputs, setInputs] = useState({
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        degree: "",
+        sex: "",
+        batch: "",
+        username: "",
+        password: ""
+    })
+
     const [form, setForm] = useState({
         firstName: "",
         middleName: "",
@@ -15,14 +28,30 @@ const MemberSignUp = () => {
 
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleInputChange = (e) => {
+        setInputs({ ...inputs, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle sign up logic here
+        setForm({ ...inputs });
+        console.log("Submitted form:", inputs);
+
+
+        try {
+            const orgSignIn = await api.post(`auth/signUpAsMember`, {
+
+            })
+
+        } catch (error) {
+            console.error("Sign up failed");
+            alert("Sign up failed: Username already exists");
+            console.error("Error during organization sign up:", error);
+        }
+
     };
+
+    // signUpAsMember
 
     return (
         <div className="h-screen w-screen flex items-center justify-center bg-gray-100">
@@ -40,8 +69,8 @@ const MemberSignUp = () => {
                         type="text"
                         name="firstName"
                         placeholder="First Name"
-                        value={form.firstName}
-                        onChange={handleChange}
+                        value={inputs.firstName}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
@@ -49,16 +78,16 @@ const MemberSignUp = () => {
                         type="text"
                         name="middleName"
                         placeholder="Middle Name (optional)"
-                        value={form.middleName}
-                        onChange={handleChange}
+                        value={inputs.middleName}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <input
                         type="text"
                         name="lastName"
                         placeholder="Last Name"
-                        value={form.lastName}
-                        onChange={handleChange}
+                        value={inputs.lastName}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
@@ -66,15 +95,15 @@ const MemberSignUp = () => {
                         type="text"
                         name="degree"
                         placeholder="Degree Program"
-                        value={form.degree}
-                        onChange={handleChange}
+                        value={inputs.degree}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
                     <select
                         name="sex"
-                        value={form.sex}
-                        onChange={handleChange}
+                        value={inputs.sex}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     >
@@ -87,8 +116,8 @@ const MemberSignUp = () => {
                         type="text"
                         name="batch"
                         placeholder="University Batch"
-                        value={form.batch}
-                        onChange={handleChange}
+                        value={inputs.batch}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
@@ -96,8 +125,8 @@ const MemberSignUp = () => {
                         type="text"
                         name="username"
                         placeholder="Username"
-                        value={form.username}
-                        onChange={handleChange}
+                        value={inputs.username}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
@@ -105,8 +134,8 @@ const MemberSignUp = () => {
                         type="password"
                         name="password"
                         placeholder="Password"
-                        value={form.password}
-                        onChange={handleChange}
+                        value={inputs.password}
+                        onChange={handleInputChange}
                         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                         required
                     />
