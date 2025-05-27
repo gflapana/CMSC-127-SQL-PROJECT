@@ -11,13 +11,13 @@ const OrgHome = () => {
     const { auth, setAuth } = useAuth();
 
     const organization = auth?.user;
-    const organization_id = organization?.organization_id;
-    console.log("organization ID:", organization_id);
+    // const organization_id = organization?.organization_id;
+    console.log("organization ID:", auth?.user.organization_id   );
     console.log("Home Auth:", auth?.user);
 
     const [isEditing, setIsEditing] = useState(false);
     const [organizationData, setOrganizationData] = useState({
-        id: organization.organization_id,
+        organization_id: organization.organization_id,
         date_established: organization.date_established,
         organization_name: organization.organization_name,
         organization_type: organization.organization_type,
@@ -37,11 +37,11 @@ const OrgHome = () => {
     const handleUpdateOrganization = async (e) => {
         e.preventDefault();
         try {
-            console.log(organizationData);
+            console.log("new orgdaata:",  organizationData);
             await api.post(`/organization/editDetails`, organizationData);
             setUser(organizationData);
             setAuth({ user: organizationData, role: "organization" });
-            localStorage.setItem('auth', JSON.stringify({ user: organizationData.id, role: "organization" }));
+            localStorage.setItem('auth', JSON.stringify({ user: organizationData, role: "organization" }));
             handleCancel();
         } catch (error) {
             console.error("Error updating organization:", error);

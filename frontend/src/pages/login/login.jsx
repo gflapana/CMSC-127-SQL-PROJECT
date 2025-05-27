@@ -26,10 +26,9 @@ const LogIn = () => {
                 type: role
             });
             if (response.data && response.data.user) {
-
-
                 setAuth({ user: response.data.user, role: role });
-                localStorage.setItem('auth', JSON.stringify({ user: response.data.user.organization_id, role: role }));
+                localStorage.setItem('auth', JSON.stringify({ user: response.data.user, role: role }));
+                console.log("Login successful:", response.data.user);
 
                 setSuccess(true);
                 setError("");
