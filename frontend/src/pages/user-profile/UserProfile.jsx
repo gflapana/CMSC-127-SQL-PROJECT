@@ -2,7 +2,7 @@ import React from "react";
 import UserNavBar from "../../components/UserNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 
-const UserHome = () => {
+const UserProfile = () => {
 
     const { auth, setAuth } = useAuth();
 
@@ -17,11 +17,11 @@ const UserHome = () => {
             <div className="max-w-7xl mx-auto mt-12 p-8 bg-white rounded-lg shadow text-center">
                 <h1 className="text-3xl font-bold mb-4 text-blue-600">{member.member_name}</h1>
                 <p className="text-gray-700">
-                    Welcome to your organization's dashboard! Use the navigation bar above to manage fees, view members, and more.
+                    Profile
                 </p>
             </div>
         </div>
     );
 };
 
-export default UserHome;
+export default UserProfile;

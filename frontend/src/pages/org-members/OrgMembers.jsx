@@ -15,7 +15,7 @@ const OrgMembers = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const [tableView, setTableView] = useState("viewall"); 
+    const [tableView, setTableView] = useState("viewall");
     const [semester, setSemester] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
@@ -63,7 +63,7 @@ const OrgMembers = () => {
 
     useEffect(() => {
         const getAllAlumni = async () => {
-            try{
+            try {
                 const allAlumni = await api.get(`/organization/getAlumni?id=${id}&date=${dateQuery}`);
                 setMembers(Array.isArray(allAlumni.data.members) ? allAlumni.data.members : []);
                 setAlumni(Array.isArray(allAlumni.data.alumni) ? allAlumni.data.alumni : []);
@@ -71,9 +71,9 @@ const OrgMembers = () => {
             } catch (error) {
                 console.error("Error fetching alumni:", error);
             }
-        } 
+        }
         getAllAlumni();
-    },[dateQuery, id]);
+    }, [dateQuery, id]);
 
     const handleSelectChange = (e) => setSelectedFilter(e.target.value);
     const handleFilterSortChange = (e) => setFilterSort(e.target.value);
