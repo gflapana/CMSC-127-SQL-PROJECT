@@ -500,9 +500,21 @@ FROM (
     FROM fee AS f
     JOIN organization_has_member AS ohm ON f.member_id = ohm.member_id
     WHERE f.date_paid IS NULL 
-      AND ohm.organization_id = ?
-      AND f.semester = ?
-    GROUP BY f.member_id
+      AND ohm.organization_id = ?`
+        const params: (string | number)[] = [];
+
+        if (req.query.id && typeof req.query.id == 'string') {
+            params.push(req.query.id);
+        }
+
+        if ( req.query.semester && typeof req.query.semester == 'string' && req.query.academic_year && typeof req.query.academic_year == 'string') {
+            query += ` AND f.academic_year = ?
+      AND f.semester = ? `;
+            params.push(req.query.academic_year);
+            params.push(req.query.semester);
+        }
+
+        query += ` GROUP BY f.member_id
 ) AS debts
 JOIN member as m on debts.member_id = m.member_id
 WHERE total_debt = (SELECT MAX(total_debt) 
@@ -511,18 +523,21 @@ WHERE total_debt = (SELECT MAX(total_debt)
                         FROM fee AS f
                         JOIN organization_has_member AS ohm ON f.member_id = ohm.member_id
                         WHERE f.date_paid IS NULL 
-                          AND ohm.organization_id = ?
-                          AND f.semester = ?
-                        GROUP BY f.member_id
-                    ) AS max_debts)`;
-        const params: (string | number)[] = [];
+                          AND ohm.organization_id = ? `;
 
-        if (req.query.id && typeof req.query.id == 'string' && req.query.semester && typeof req.query.semester == 'string') {
+        if (req.query.id && typeof req.query.id == 'string') {
             params.push(req.query.id);
-            params.push(req.query.semester);
-            params.push(req.query.id);
+        }
+
+        if (req.query.semester && typeof req.query.semester == 'string' && req.query.academic_year && typeof req.query.academic_year == 'string') {
+            query += ` AND f.academic_year = ?
+                          AND f.semester = ? `
+            params.push(req.query.academic_year);
             params.push(req.query.semester);
         }
+
+        query += `GROUP BY f.member_id
+                    ) AS max_debts)`
 
         const conn = await pool.getConnection();
         try {
