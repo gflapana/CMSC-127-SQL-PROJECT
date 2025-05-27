@@ -507,13 +507,13 @@ FROM (
             params.push(req.query.id);
         }
 
-        if ( req.query.academic_year && typeof req.query.academic_year == 'string') {
+        if (req.query.academic_year && typeof req.query.academic_year == 'string') {
             query += ` AND f.academic_year = ? `;
             params.push(req.query.academic_year);
-            
+
         }
 
-        if (req.query.semester && typeof req.query.semester == 'string'){
+        if (req.query.semester && typeof req.query.semester == 'string') {
             query += ' AND f.semester = ? ';
             params.push(req.query.semester);
         }
@@ -533,13 +533,13 @@ WHERE total_debt = (SELECT MAX(total_debt)
             params.push(req.query.id);
         }
 
-        if ( req.query.academic_year && typeof req.query.academic_year == 'string') {
+        if (req.query.academic_year && typeof req.query.academic_year == 'string') {
             query += ` AND f.academic_year = ? `;
             params.push(req.query.academic_year);
-            
+
         }
 
-        if (req.query.semester && typeof req.query.semester == 'string'){
+        if (req.query.semester && typeof req.query.semester == 'string') {
             query += ' AND f.semester = ? ';
             params.push(req.query.semester);
         }
@@ -572,14 +572,11 @@ const editDetails = async (
 ) => {
     let query = "UPDATE organization SET organization_name = ?, organization_type = ?, date_established = ?, years_active = ? WHERE organization_id = ?";
     let params: string[] = [];
-    if (req.body.id && typeof req.body.id == 'number' && req.body.organization_name && typeof req.body.organization_name == 'string' && req.body.organization_type && typeof req.body.organization_type == 'string' && req.body.date_established && typeof req.body.date_established == 'number' && req.body.years_active && typeof req.body.years_active == 'number') {
-        params.push(req.body.organization_name);
-        params.push(req.body.organization_type);
-        params.push(req.body.date_established);
-        params.push(req.body.years_active);
-        params.push(req.body.id);
-    }
-
+    params.push(req.body.organization_name);
+    params.push(req.body.organization_type);
+    params.push(req.body.date_established);
+    params.push(req.body.years_active);
+    params.push(req.body.id);
     console.log(params);
     try {
         const conn = await pool.getConnection();
