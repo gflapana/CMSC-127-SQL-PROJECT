@@ -576,10 +576,8 @@ const deleteMember = async (
     res: express.Response,
     next: express.NextFunction
 ) => {
-    let query = `DELETE FROM organization_has_member WHERE member_id=?;
-DELETE FROM fee WHERE member_id=?;
-DELETE FROM member WHERE member_id=?;`;
 
+<<<<<<< HEAD
     let params: string[] = [];
     if (req.body.id && typeof req.body.id == 'number') {
         params.push(req.body.id);
@@ -588,10 +586,14 @@ DELETE FROM member WHERE member_id=?;`;
     }
 
     console.log(params);
+=======
+>>>>>>> main
     try {
         const conn = await pool.getConnection();
         try {
-            await conn.query(query, params);
+            await conn.query(`DELETE FROM organization_has_member WHERE member_id=${req.body.id}`);
+            await conn.query(`DELETE FROM fee WHERE member_id=${req.body.id}`);
+            await conn.query(`DELETE FROM member WHERE member_id=${req.body.id}`);
             res.json({ status: "success" });
         } catch (err) {
             console.error(err);
@@ -816,7 +818,23 @@ const getFees = async (
         }
 
         if (req.query.payment_status && typeof req.query.payment_status == 'string') {
+<<<<<<< HEAD
             conditions.push(`payment_status like '%${req.query.payment_status}%'`);
+=======
+            switch (req.query.payment_status.toLowerCase()) {
+                case 'paid':
+                    conditions.push('date_paid <= due_date');
+                    break;
+                case 'unpaid':
+                    conditions.push('date_paid IS NULL');
+                    break;
+                case 'paid late':
+                    conditions.push('date_paid > due_date');
+                    break;
+                default:
+                    res.status(400).json({ error: "Incorrect payment status" });
+            }
+>>>>>>> main
         }
 
         if (req.query.semester && typeof req.query.semester == 'string') {
