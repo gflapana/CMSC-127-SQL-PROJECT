@@ -1,4 +1,3 @@
-import React from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import { useState } from "react";
 import api from "../../api/axios.js";
@@ -123,7 +122,7 @@ const OrgHome = () => {
                                     <button
                                         onClick={() => {
                                             setIsEditing(true);
-                                            handleEditClick(member);
+                                            // handleEditClick(member);
                                         }}
                                         className="text-blue-500 hover:text-blue-700 mb-5"
                                         aria-label={`Edit member ${user?.organization_name}`}

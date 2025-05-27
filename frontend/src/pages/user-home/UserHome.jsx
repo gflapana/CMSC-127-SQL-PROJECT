@@ -1,14 +1,12 @@
-import React from "react";
 import UserNavBar from "../../components/UserNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import { useState, useEffect } from "react";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
 
 
 const UserHome = () => {
 
-    const { auth, setAuth } = useAuth();
+    const { auth  } = useAuth();
 
     const member = auth?.user;
     const id = member.member_id;
@@ -43,24 +41,13 @@ const UserHome = () => {
                             Here are the list of organizations you are a member of. You can view your fees, manage your profile, and more using the navigation bar above.
                         </p>
                     </div>
-                    {/* Table View Selector and Sort */}
                     <div className="flex flex-row justify-between gap-4 mb-6">
                     </div>
 
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                         <div className="flex items-center gap-2 w-full md:w-auto">
                             <div className="relative">
-                                {/* <Menu className="w-5 h-5 text-blue-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" /> */}
-                                {/* <select
-                                    onChange={handleSelectChange}
-                                    className="border rounded-l pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 appearance-none"
-                                    defaultValue=""
-                                >
-                                    <option value="">All Status</option>
-                                    <option value="Paid">Paid</option>
-                                    <option value="Unpaid">Unpaid</option>
-                                    <option value="Paid Late">Paid Late</option>
-                                </select> */}
+        
                             </div>
                         </div>
                     </div>

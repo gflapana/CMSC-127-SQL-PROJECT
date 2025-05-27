@@ -1,12 +1,11 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import OrgNavBar from "../../components/OrgNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
+import { Menu, ArrowDown } from 'lucide-react';
 
 const DeleteFee = () => {
-    const { auth, setAuth } = useAuth();
+    const { auth } = useAuth();
 
     const org = auth?.user;
     const id = org.organization_id;
@@ -17,8 +16,6 @@ const DeleteFee = () => {
     const [tableView, setTableView] = useState("viewall");
     const [selectedFilter, setSelectedFilter] = useState("");
     const [totalFees, setTotalFees] = useState();;
-    const [searchQuery, setSearchQuery] = useState("");
-    const [searchInput, setSearchInput] = useState("");
     const [acadYearInput, setAcadYearInput] = useState("");
     const [acadYearQuery, setAcadYearQuery] = useState("");
     const [semester, setSemester] = useState("");

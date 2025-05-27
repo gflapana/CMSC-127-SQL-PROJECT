@@ -1,5 +1,5 @@
 import UserNavBar from "../../components/UserNavBar";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import api from "../../api/axios.js";
 import useAuth from "../../hooks/useAuth.jsx";
 import { Edit2 } from 'lucide-react';
@@ -152,7 +152,7 @@ const UserProfile = () => {
                                 </button>
                             )}
                             <p className="text-gray-700 mb-6">Profile</p>
-                            <h1 className="text-3xl font-bold mb-4 text-blue-600 mb-10">
+                            <h1 className="text-3xl font-bold text-blue-600 mb-10">
                                 {user?.first_name} {user?.middle_name} {user?.last_name}
                             </h1>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-md mx-auto">

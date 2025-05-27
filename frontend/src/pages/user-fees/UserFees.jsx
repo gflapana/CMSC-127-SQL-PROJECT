@@ -1,13 +1,12 @@
-import React from "react";
 import UserNavBar from "../../components/UserNavBar";
 import useAuth from "../../hooks/useAuth.jsx";
 import { useState, useEffect } from "react";
 import api from "../../api/axios.js";
-import { ChartBar, Menu, ArrowDown, TabletSmartphone } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 const UserFees = () => {
 
-    const { auth, setAuth } = useAuth();
+    const { auth } = useAuth();
 
     const member = auth?.user;
     const id = member.member_id;

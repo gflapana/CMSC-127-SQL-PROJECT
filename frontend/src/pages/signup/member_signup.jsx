@@ -1,5 +1,4 @@
-import { HandMetal } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios.js";
 
@@ -36,6 +35,7 @@ const MemberSignUp = () => {
         e.preventDefault();
         setForm({ ...inputs });
         console.log("Submitted form:", inputs);
+        console.log("Submitted form:", form);
 
 
         try {

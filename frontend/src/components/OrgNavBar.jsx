@@ -6,10 +6,9 @@ import useAuth from "../hooks/useAuth.jsx";
 
 const OrgNavBar = () => {
     const navigate = useNavigate();
-    const { auth, setAuth } = useAuth();
+    const { setAuth } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [isOpen2, setIsOpen2] = useState(false);
-
 
     const handleSelect = (action) => {
         setIsOpen(false); // Close dropdown

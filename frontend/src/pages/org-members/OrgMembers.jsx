@@ -5,7 +5,7 @@ import api from "../../api/axios.js";
 import { ChartBar, Menu, ArrowDown } from 'lucide-react';
 
 const OrgMembers = () => {
-    const { auth, setAuth } = useAuth();
+    const { auth } = useAuth();
     const [members, setMembers] = useState([]);
     const [percentageMems, setPercentageMems] = useState([]);
     const [alumni, setAlumni] = useState([]);

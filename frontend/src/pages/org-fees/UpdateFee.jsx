@@ -6,7 +6,7 @@ import api from "../../api/axios.js";
 import { ChartBar, Menu, ArrowDown, TabletSmartphone, Edit2 } from 'lucide-react';
 
 const UpdateFee = () => {
-    const { auth, setAuth } = useAuth();
+    const { auth } = useAuth();
 
     const org = auth?.user;
     const id = org.organization_id;
@@ -37,7 +37,7 @@ const UpdateFee = () => {
             }
         };
         getMemFees();
-    }, [members])
+    }, [members, id])
 
     const handleEditClick = (member) => {
         setSelectedMember(member);
